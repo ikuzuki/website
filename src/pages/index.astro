@@ -1,0 +1,49 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<Base>
+  <h1>Issei Kuzuki</h1>
+  <p class="muted">Senior data engineer.</p>
+
+  <p>
+    I work on data platforms and LLM infrastructure - the boring parts that make
+    AI products reliable in production. Currently at Curve Analytics building
+    the agentic analytics layer.
+  </p>
+
+  <p>
+    Personal projects lean toward end-to-end systems: pipelines, agents,
+    serverless infra. The flagship is <a href="/projects/">FPL Pulse</a> - a
+    weekly LLM enrichment pipeline plus an interactive transfer recommendation
+    agent.
+  </p>
+
+  <h2>Recent writing</h2>
+  {
+    posts.length === 0 ? (
+      <p class="muted">Nothing published yet.</p>
+    ) : (
+      <ul class="post-list">
+        {posts.map((p) => (
+          <li>
+            <time datetime={p.data.pubDate.toISOString()}>
+              {p.data.pubDate.toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </time>
+            <a href={`/writing/${p.slug}/`}>{p.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <p><a href="/writing/">All posts &rarr;</a></p>
+</Base>

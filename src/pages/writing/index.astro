@@ -1,0 +1,32 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<Base title="Writing" description="Notes on data engineering, LLM infrastructure, and AI-native practice.">
+  <h1>Writing</h1>
+  {
+    posts.length === 0 ? (
+      <p class="muted">Nothing published yet.</p>
+    ) : (
+      <ul class="post-list">
+        {posts.map((p) => (
+          <li>
+            <time datetime={p.data.pubDate.toISOString()}>
+              {p.data.pubDate.toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </time>
+            <a href={`/writing/${p.slug}/`}>{p.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>

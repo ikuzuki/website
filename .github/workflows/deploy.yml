@@ -1,0 +1,89 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+      site: ${{ steps.filter.outputs.site }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            infra:
+              - 'infrastructure/**'
+            site:
+              - 'src/**'
+              - 'public/**'
+              - 'astro.config.mjs'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.json'
+
+  terraform-apply:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_CICD_ROLE_ARN }}
+          aws-region: eu-west-2
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform Apply
+        working-directory: infrastructure/environments/dev
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+  site-deploy:
+    needs: [detect-changes, terraform-apply]
+    # Always run when site files change. Re-run after infra to catch the
+    # first-deploy case where the bucket only just came into existence.
+    if: |
+      always() &&
+      (needs.terraform-apply.result == 'success' || needs.terraform-apply.result == 'skipped') &&
+      (needs.detect-changes.outputs.site == 'true' || needs.detect-changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_CICD_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync dist/ s3://issei-website-dev \
+            --delete \
+            --cache-control "public, max-age=300, s-maxage=31536000"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"

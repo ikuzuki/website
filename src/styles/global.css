@@ -1,0 +1,105 @@
+/* System-font, low-chrome stack. Optimised for reading. */
+
+:root {
+  --max-width: 42rem;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --bg: #fdfdfc;
+  --accent: #0b5fff;
+  --rule: #e5e5e5;
+  --code-bg: #f4f4f3;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #ececec;
+    --muted: #9a9a9a;
+    --bg: #121212;
+    --accent: #6aa3ff;
+    --rule: #2a2a2a;
+    --code-bg: #1d1d1d;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--bg); color: var(--text); }
+
+body {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 3rem 1.25rem 6rem;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+nav {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 0;
+  display: flex;
+  gap: 1.25rem;
+  align-items: baseline;
+}
+nav .home { font-weight: 600; color: var(--text); }
+nav .spacer { flex: 1; }
+nav a { color: var(--muted); }
+nav a.active { color: var(--text); }
+
+h1, h2, h3 { line-height: 1.25; margin: 2rem 0 0.5rem; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.1rem; }
+p, ul, ol { margin: 0.75rem 0; }
+
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+
+code {
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+pre code { background: transparent; padding: 0; }
+pre {
+  background: var(--code-bg);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+
+blockquote {
+  border-left: 3px solid var(--rule);
+  margin: 1rem 0;
+  padding: 0.25rem 1rem;
+  color: var(--muted);
+}
+
+footer {
+  max-width: var(--max-width);
+  margin: 4rem auto 2rem;
+  padding: 1.5rem 1.25rem 0;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+  color: var(--muted);
+  display: flex;
+  gap: 1rem;
+}
+
+.post-list { list-style: none; padding: 0; }
+.post-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--rule); }
+.post-list time { color: var(--muted); font-size: 0.9em; margin-right: 0.75rem; }
+
+.muted { color: var(--muted); }
