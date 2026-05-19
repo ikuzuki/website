@@ -9,41 +9,47 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
 
 <Base>
   <h1>Issei Kuzuki</h1>
-  <p class="muted">Senior data engineer.</p>
-
-  <p>
-    I work on data platforms and LLM infrastructure - the boring parts that make
-    AI products reliable in production. Currently at Curve Analytics building
-    the agentic analytics layer.
+  <p class="muted">
+    Data and platform engineering. Currently at Curve Analytics, building the
+    agentic analytics layer.
   </p>
 
   <p>
-    Personal projects lean toward end-to-end systems: pipelines, agents,
-    serverless infra. The flagship is <a href="/projects/">FPL Pulse</a> - a
-    weekly LLM enrichment pipeline plus an interactive transfer recommendation
-    agent.
+    I work on the unglamorous parts of LLM-backed products — the data plane,
+    the infrastructure, the cost engineering, the decisions that let a model
+    call survive contact with production. Most of what I write here is
+    fieldwork from those edges.
   </p>
 
-  <h2>Recent writing</h2>
+  <p>
+    The bigger personal project is <a href="/projects/fpl-pulse/">FPL Pulse</a>
+    — a weekly LLM enrichment pipeline plus an interactive transfer
+    recommendation agent, both running end-to-end on AWS. The repo and the
+    decisions behind it are in <a href="/projects/">projects</a>.
+  </p>
+
   {
-    posts.length === 0 ? (
-      <p class="muted">Nothing published yet.</p>
-    ) : (
-      <ul class="post-list">
-        {posts.map((p) => (
-          <li>
-            <time datetime={p.data.pubDate.toISOString()}>
-              {p.data.pubDate.toLocaleDateString("en-GB", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-            </time>
-            <a href={`/writing/${p.slug}/`}>{p.data.title}</a>
-          </li>
-        ))}
-      </ul>
+    posts.length > 0 && (
+      <>
+        <h2>Recent writing</h2>
+        <ul class="post-list">
+          {posts.map((p) => (
+            <li>
+              <time datetime={p.data.pubDate.toISOString()}>
+                {p.data.pubDate.toLocaleDateString("en-GB", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+              <a href={`/writing/${p.slug}/`}>{p.data.title}</a>
+            </li>
+          ))}
+        </ul>
+        <p>
+          <a href="/writing/">All posts →</a>
+        </p>
+      </>
     )
   }
-  <p><a href="/writing/">All posts &rarr;</a></p>
 </Base>

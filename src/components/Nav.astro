@@ -5,8 +5,20 @@ const isActive = (p: string) =>
 ---
 
 <nav>
-  <a href="/" class="home">Issei Kuzuki</a>
+  <a
+    href="/"
+    class="home"
+    aria-current={pathname === "/" ? "page" : undefined}>Issei Kuzuki</a
+  >
   <span class="spacer"></span>
-  <a href="/projects/" class={isActive("/projects") ? "active" : ""}>Projects</a>
-  <a href="/writing/" class={isActive("/writing") ? "active" : ""}>Writing</a>
+  <a
+    href="/projects/"
+    class={isActive("/projects") ? "active" : ""}
+    aria-current={isActive("/projects") ? "page" : undefined}>Projects</a
+  >
+  <a
+    href="/writing/"
+    class={isActive("/writing") ? "active" : ""}
+    aria-current={isActive("/writing") ? "page" : undefined}>Writing</a
+  >
 </nav>

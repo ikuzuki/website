@@ -1,0 +1,146 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="Scout Agent"
+  description="A LangGraph transfer-recommendation agent on a Lambda Function URL with SSE streaming through CloudFront."
+>
+  <p class="muted"><a href="/projects/">← Projects</a></p>
+
+  <h1>Scout Agent — agentic recommendations</h1>
+  <p class="muted">
+    LangGraph · Neon pgvector · Lambda Function URL · SSE · FastAPI · CloudFront
+  </p>
+
+  <figure>
+    <img src="/diagrams/scout-agent-architecture.svg" alt="Scout Agent architecture: browser opens an SSE connection to CloudFront, CloudFront forwards to a Lambda Function URL with a shared-secret header, the Lambda runs a four-node LangGraph state machine over Neon pgvector and curated S3 data." />
+    <figcaption class="muted">
+      Browser → CloudFront → Function URL → LangGraph (planner → tools → reflector → recommender) → pgvector + curated S3.
+    </figcaption>
+  </figure>
+
+  <h2>What it does</h2>
+  <p>
+    A conversational transfer-recommendation agent on top of the
+    <a href="/projects/fpl-pulse/">FPL Pulse pipeline</a>. The user pastes
+    their FPL team ID; the agent reads curated enrichment data, queries
+    pgvector for similar players, weighs upcoming fixtures, and streams a
+    reasoned transfer recommendation back to the browser. Interactive,
+    multi-step, branching, loops back on itself when the first plan doesn't
+    survive contact with the tool results.
+  </p>
+
+  <h2>Why LangGraph here, when I rejected it for the day job</h2>
+  <p>
+    Six weeks before building this, I'd written an ADR at Curve choosing
+    Pydantic AI over LangGraph for our LLM-Ops orchestration layer. Same
+    engineer, opposite call. That isn't a contradiction — the framing from
+    the earlier ADR is what makes the second decision: <em>use-case shape,
+    not capability count, picks the framework.</em>
+  </p>
+  <p>
+    The Curve work is request-scoped agents that fan out for seconds.
+    <code>asyncio.gather</code> over Pydantic AI agents pays for itself
+    because the workload is parallel-fan-out, not stateful-loop. The Scout
+    Agent is the opposite: a single user request runs a conditional cycle
+    over a shared state, the planner needs to inspect tool results and
+    decide whether to keep going, and the iteration count needs to be
+    bounded explicitly. That's the shape LangGraph is built for, and forcing
+    it through plain asyncio would pay the abstraction cost without
+    collecting the abstraction benefit.
+  </p>
+  <p>
+    Both ADRs live in the FPL repo:
+    <a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-009-scout-agent-langgraph.md">FPL ADR-009</a>.
+    A sanitised write-up of the cross-call is on the
+    <a href="/writing/">writing</a> page.
+  </p>
+
+  <h2>The shape</h2>
+  <p>
+    Four nodes: <code>planner</code> turns the user query into a sequence of
+    tool calls; <code>tool_executor</code> runs them (pgvector similarity
+    search, player history lookup, fixture difficulty, head-to-head
+    comparison); <code>reflector</code> reads the results and decides
+    whether the plan needs another pass; <code>recommender</code> emits the
+    final recommendation. The reflector → planner edge is conditional and
+    capped at three iterations — enough room for the agent to recover from
+    a bad first plan, not enough to run away with cost.
+  </p>
+  <p>
+    Embeddings are <code>all-MiniLM-L6-v2</code> at 384 dimensions, stored in
+    Neon pgvector. Cheap, small, runs on the always-free Neon tier; the
+    quality lift from anything bigger would be invisible at this corpus
+    size (~700 players × a handful of facets each).
+  </p>
+
+  <h2>Why this needed an ADR — the OAC-on-POST landmine</h2>
+  <p>
+    The Scout Agent sits on a Lambda Function URL, fronted by CloudFront for
+    rate-limiting, geo, and to avoid leaking the Function URL directly. The
+    textbook pattern for that combination is CloudFront Origin Access
+    Control with <code>AWS_IAM</code> on the Function URL — CloudFront signs
+    each origin request, Lambda validates the SigV4, anything that goes
+    direct to the Function URL is rejected.
+  </p>
+  <p>
+    100% of POST requests returned 403 in production.
+  </p>
+  <p>
+    The cause: SigV4 requires the SHA256 of the request body in the
+    canonical request. CloudFront cannot compute that ahead of time when the
+    body is a stream that's still being sent — and on
+    Server-Sent-Events-shaped requests, the body genuinely is a stream.
+    Every AWS example for this pattern uses GET, where there's no body and
+    the hash of empty is constant. The pattern is documented for GETs and
+    silently broken for POSTs.
+  </p>
+  <p>
+    Secondary landmine: in October 2025 AWS started requiring <em>both</em>
+    <code>lambda:InvokeFunctionUrl</code> and <code>lambda:InvokeFunction</code>
+    on the resource policy. Older guides only grant the first; new
+    deployments using those guides 403 with no useful error.
+  </p>
+  <p>
+    Fix: drop OAC + AWS_IAM, set the Function URL to
+    <code>auth_type = NONE</code>, and inject a shared-secret header on
+    every CloudFront origin request. The Lambda rejects anything missing or
+    mismatching the header. Function URL is effectively unreachable except
+    through CloudFront. Secret lives in SSM SecureString.
+  </p>
+  <p>
+    Full write-up:
+    <a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-010-cloudfront-shared-secret.md">FPL ADR-010</a>.
+  </p>
+
+  <h2>Streaming, briefly</h2>
+  <p>
+    The agent streams thinking tokens back to the browser over Server-Sent
+    Events. Lambda Function URLs support response streaming up to 20MB of
+    response body and a 15-minute response duration, which is generous;
+    Lambda Web Adapter sits in front of the FastAPI app and converts the
+    Lambda invocation model to a normal ASGI request. CloudFront's
+    <em>AllViewerExceptHostHeader</em> origin-request policy forwards
+    everything except the host header so the Function URL accepts the
+    request; the host header gets stripped because Function URLs reject
+    requests whose host doesn't match their own domain.
+  </p>
+
+  <h2>Safety</h2>
+  <p>
+    The agent's tools are fixed paths to Neon and S3; no user-controlled
+    URLs, no shell, no eval. Parameters are validated through Pydantic
+    before being assembled into the SQL or HTTP call. DynamoDB holds a
+    per-request budget cap and rate limiter — cheap protection against
+    runaway agent loops if the iteration cap fails to bind.
+  </p>
+
+  <h2>Links</h2>
+  <ul class="post-list">
+    <li><a href="https://github.com/ikuzuki/fpl-platform">Repository</a></li>
+    <li><a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-009-scout-agent-langgraph.md">ADR-009 — Why LangGraph</a></li>
+    <li><a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-010-cloudfront-shared-secret.md">ADR-010 — CloudFront shared-secret</a></li>
+    <li><a href="/projects/fpl-pulse/">FPL Pulse — the batch pipeline underneath</a></li>
+  </ul>
+</Base>

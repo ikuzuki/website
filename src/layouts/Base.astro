@@ -1,16 +1,41 @@
 ---
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
-import { SITE_TITLE, SITE_DESCRIPTION, GITHUB_URL, LINKEDIN_URL } from "../consts";
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  AUTHOR,
+  GITHUB_URL,
+  LINKEDIN_URL,
+  CONTACT_EMAIL,
+} from "../consts";
 
 interface Props {
   title?: string;
   description?: string;
+  /** Optional override; defaults to /og-default.png at the site root. */
+  ogImage?: string;
 }
 
-const { title, description = SITE_DESCRIPTION } = Astro.props;
-const fullTitle = title ? `${title} - ${SITE_TITLE}` : SITE_TITLE;
+const { title, description = SITE_DESCRIPTION, ogImage = "/og-default.png" } =
+  Astro.props;
+const fullTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const ogImageUrl = new URL(ogImage, Astro.site).toString();
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: AUTHOR,
+  url: Astro.site?.toString(),
+  email: `mailto:${CONTACT_EMAIL}`,
+  jobTitle: "Data Engineer",
+  worksFor: {
+    "@type": "Organization",
+    name: "Curve Analytics",
+  },
+  sameAs: [GITHUB_URL, LINKEDIN_URL],
+};
 ---
 
 <!doctype html>
@@ -20,6 +45,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={AUTHOR} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
@@ -28,10 +54,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       title={SITE_TITLE}
       href="/rss.xml"
     />
+
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content={SITE_TITLE} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
   </head>
   <body>
     <Nav />
@@ -39,6 +75,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       <slot />
     </main>
     <footer>
+      <a href={`mailto:${CONTACT_EMAIL}`}>Email</a>
       <a href={GITHUB_URL}>GitHub</a>
       <a href={LINKEDIN_URL}>LinkedIn</a>
       <a href="/rss.xml">RSS</a>

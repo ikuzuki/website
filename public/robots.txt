@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://de5chlefe7o13.cloudfront.net/sitemap-index.xml
