@@ -84,7 +84,31 @@ tags: [aws, llm]
 
 ## Domain
 
-Currently published at the CloudFront default domain (`*.cloudfront.net`).
-Custom domain wiring (ACM cert in `us-east-1`, Route 53 alias, CloudFront
-alternate domain name) lands in a follow-up once the domain is
-registered.
+Currently published at the CloudFront default domain
+`https://de5chlefe7o13.cloudfront.net/`. Custom domain wiring (ACM cert
+in `us-east-1`, Route 53 alias, CloudFront alternate domain name) lands
+in a follow-up once the domain is registered.
+
+## Activating the deploy workflow
+
+The first push happened with a token that lacked `workflow` scope, so
+the deploy file is parked at `.github/workflows.pending-deploy.yml`.
+To activate:
+
+```bash
+gh auth refresh -s workflow
+git mv .github/workflows.pending-deploy.yml .github/workflows/deploy.yml
+git commit -m "ci: enable deploy workflow"
+git push
+```
+
+Repo secrets `AWS_CICD_ROLE_ARN` and `CLOUDFRONT_DISTRIBUTION_ID` are
+already set.
+
+## Current state
+
+- Bootstrap applied: state bucket `issei-website-tf-state`, lock table
+  `issei-website-tf-lock`, role `Issei-Website-CICD-Role`.
+- Dev env applied: bucket `issei-website-dev`, distribution
+  `E3MCUNVBQ8D4EU`, domain `de5chlefe7o13.cloudfront.net`.
+- Site is live and serving the placeholder content.
