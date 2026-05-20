@@ -69,6 +69,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          SITE_URL: https://isseikuzuki.co.uk
         run: npm run build
 
       - uses: aws-actions/configure-aws-credentials@v4
