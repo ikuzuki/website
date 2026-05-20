@@ -8,133 +8,70 @@ import Base from "../../layouts/Base.astro";
 >
   <p class="muted"><a href="/projects/">← Projects</a></p>
 
-  <h1>FPL Pulse — weekly enrichment pipeline</h1>
+  <h1>FPL Pulse, weekly enrichment pipeline</h1>
   <p class="muted">
-    AWS Lambda · Step Functions · S3 · Anthropic Haiku/Sonnet · Langfuse · Terraform
+    AWS Lambda, Step Functions, S3, Anthropic Haiku and Sonnet, Langfuse, Terraform.
   </p>
 
   <figure>
-    <img src="/diagrams/fpl-pulse-architecture.svg" alt="FPL Pulse architecture: five Lambda collectors land raw data in S3, a Step Function drives enrichment through Anthropic Haiku and Sonnet, curated output is served via CloudFront." />
+    <img
+      src="/diagrams/fpl-pulse-architecture.svg"
+      alt="FPL Pulse architecture: five Lambda collectors land raw data in S3, a Step Function drives enrichment through Anthropic Haiku and Sonnet, curated output is served via CloudFront."
+    />
     <figcaption class="muted">
-      Sources → S3 raw → Step Functions → enrichment Lambdas → curated → CloudFront. Diagram available on
-      <a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/architecture/fpl-pulse-flagship.drawio">GitHub</a>.
+      Sources, S3 raw, Step Functions, enrichment Lambdas, curated, CloudFront. The diagram lives at <a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/architecture/fpl-pulse-flagship.drawio">fpl-platform/docs/architecture</a>.
     </figcaption>
   </figure>
 
-  <h2>What it does</h2>
   <p>
-    Every gameweek the pipeline picks up raw data from the FPL API, Understat,
-    and a handful of news sources, normalises it, and runs each of the ~700
-    players through an LLM enrichment pass — short-form summary, injury
-    signal, sentiment, transfer narrative. The curated output lands as
-    versioned parquet in S3 and feeds both the public
-    <a href="https://fpl.isseikuzuki.co.uk">dashboard</a> and the
-    <a href="/projects/scout-agent/">Scout Agent</a>.
-  </p>
-  <p>
-    The goal wasn't another FPL tool; it was a personal-scale clone of the
-    production shape I work on at Curve — batch pipelines, enrichment,
-    observability, IaC — built end-to-end in one repo so the architecture is
-    legible without an NDA conversation.
+    Every gameweek the pipeline picks up raw data from the FPL API, Understat, and a handful of news sources, normalises it, and runs each of the roughly 700 players through an LLM enrichment pass (short-form summary, injury signal, sentiment, transfer narrative). The curated output lands as versioned parquet in S3 and feeds both the dashboard and the <a href="/projects/scout-agent/">Scout Agent</a>.
   </p>
 
-  <h2>Architecture, briefly</h2>
   <p>
-    Five collector Lambdas run in parallel and land raw JSON in
-    <code>s3://fpl-data-lake-dev/raw/season=.../gameweek=.../</code>. A
-    validation Lambda promotes successful runs to <code>clean/</code>, then a
-    Step Function fans out enrichment Lambdas that call Anthropic Haiku for
-    bulk summaries and Sonnet for the harder reasoning passes. A curate step
-    synthesises the enriched parquet into dashboard- and agent-ready JSON
-    under <code>curated/</code>, which CloudFront serves through an
-    OAC-signed S3 origin.
-  </p>
-  <p>
-    Eleven ADRs in <code>docs/adrs/</code> capture the decisions that
-    actually changed the shape — model selection, Step Function retry
-    alignment, the curate-vs-on-read tradeoff, the OAC POST landmine on the
-    agent side. The build log lives in
-    <code>knowledge-vault/projects/fpl-build-log.md</code>.
+    The goal wasn't another FPL tool. I wanted a personal-scale clone of the production shape I work on day-to-day (batch pipelines, enrichment, observability, IaC), built end-to-end in one repo so the architecture would be legible without an NDA conversation.
   </p>
 
-  <h2>Three decisions worth pulling out</h2>
+  <h2>The shape</h2>
 
-  <h3>Cost discipline is a feature, not a constraint</h3>
   <p>
-    The whole pipeline runs inside the AWS free tier. Lambda, Step Functions,
-    S3, CloudFront, SSM Parameter Store — combined cost is rounding error
-    against the Claude API spend, which itself caps at £5–10/month even with
-    weekly full-population enrichment. That isn't an accident; it shaped real
-    decisions. Secrets Manager came out (£2/month → £0 via SSM SecureString
-    once I accepted there was no rotation requirement on a solo project).
-    DynamoDB on-demand stays under the always-free tier as long as I keep the
-    Scout Agent's per-request state small. Memory on the cold-start path got
-    a deliberate bump to 3008 MB because the 27s → 8–12s cold-start
-    improvement was worth the per-ms cost — at this scale, optimising for
-    pennies of compute is the wrong instinct.
-  </p>
-  <p>
-    The corollary that keeps showing up: serverless infra is rounding error
-    against LLM spend. Cost optimisation on an LLM-heavy workload should
-    focus on model selection, batching, input filtering, and record
-    filtering, not Lambda memory or container size.
+    Five collector Lambdas run in parallel and land raw JSON in <code>s3://fpl-data-lake-dev/raw/season=.../gameweek=.../</code>. A validation Lambda promotes successful runs to <code>clean/</code>. A Step Function fans out enrichment Lambdas that call Anthropic Haiku for bulk summaries and Sonnet for the harder reasoning passes. A curate step synthesises the enriched parquet into dashboard-ready and agent-ready JSON under <code>curated/</code>, which CloudFront serves through an OAC-signed S3 origin.
   </p>
 
-  <h3>Step Functions "Succeeded" ≠ business success</h3>
   <p>
-    A Lambda that returns <code>&#123;"statusCode": 500, "body": &#123;...&#125;&#125;</code>
-    is <code>LambdaFunctionSucceeded</code> from Step Functions' perspective —
-    the invocation completed and a JSON body came back. The first version of
-    <code>CheckShouldRun</code> assumed otherwise, and a Cloudflare 403
-    inside the collector silently propagated as a successful run with empty
-    data, taking out four downstream states with cryptic JsonPath errors.
-  </p>
-  <p>
-    The fix is the durable pattern, not the patch: after every Task state
-    that can return a non-success body, the next state has to be a Choice
-    checking the actual response. The lesson sits in
-    <code>knowledge-vault/patterns/step-function-retry-alignment.md</code> and
-    has already saved an evening on the day job.
+    Eleven ADRs in <code>docs/adrs/</code> capture the decisions that actually changed the shape: model selection, Step Function retry alignment, the curate-versus-on-read tradeoff, the OAC POST landmine on the agent side. The full build log lives in the vault.
   </p>
 
-  <h3>curl_cffi for TLS-fingerprinted endpoints</h3>
+  <h2>Decisions worth pulling out</h2>
+
   <p>
-    Many of the FPL-adjacent endpoints sit behind Cloudflare which blocks AWS
-    Lambda IPs. User-agent spoofing didn't help — Cloudflare also
-    TLS-fingerprints the request, and Python <code>httpx</code> doesn't look
-    like Chrome no matter what header you send. <code>curl_cffi</code> with
-    Chrome impersonation passes the TLS layer; exponential backoff
-    (2s/4s/8s/16s/32s, five attempts) handles the rate-based blocks that the
-    impersonation alone doesn't. Without these the collectors fail roughly
-    one in three runs; with them it's been stable for months.
+    Cost discipline was a feature from the start. The whole pipeline runs inside the AWS free tier; Anthropic API spend caps at £5 to £10 a month even with full-population weekly enrichment. That isn't an accident, and the framing I now use for any LLM-heavy workload (dominating-cell, rate-limits-before-pricing, Secrets-Manager-is-paying-for-rotation) came out of building this one. The full version is in <a href="/writing/cost-engineering-llm-pipeline/">the cost-engineering post</a>.
+  </p>
+
+  <p>
+    Step Functions "Succeeded" isn't business success. A Lambda that returns <code>&#123;"statusCode": 500, "body": ...&#125;</code> is <code>LambdaFunctionSucceeded</code> from Step Functions' perspective; the invocation completed and a JSON body came back. The first version of <code>CheckShouldRun</code> assumed otherwise, and a Cloudflare 403 inside the collector propagated as a successful run with empty data, taking out four downstream states with cryptic JsonPath errors. The fix is the durable pattern, not the patch: after every Task state that can return a non-success body, the next state has to be a Choice checking the actual response. The lesson sits in the vault and has already saved an evening on the day job.
+  </p>
+
+  <p>
+    Cloudflare blocks AWS Lambda IPs on many public endpoints. User-agent spoofing doesn't help because Cloudflare also TLS-fingerprints the request, and Python <code>httpx</code> doesn't look like Chrome no matter what header you send. <code>curl_cffi</code> with Chrome impersonation passes the TLS layer; exponential backoff (2s, 4s, 8s, 16s, 32s, five attempts) handles the rate-based blocks that impersonation alone doesn't. Without these the collectors fail roughly one in three runs. With them it's been stable for months.
   </p>
 
   <h2>Observability</h2>
+
   <p>
-    Langfuse traces every LLM call at level 3 — per-request traces, quality
-    scores, per-node cost. Fast Lambdas need an explicit
-    <code>langfuse.flush()</code> before return because the background
-    shipper thread doesn't get to run otherwise; sub-second Lambdas freeze
-    mid-flight and the traces are gone. Tight timeouts
-    (<code>LANGFUSE_TIMEOUT=2s</code>, <code>FLUSH_INTERVAL=1s</code>) stop
-    Langfuse outages from cascading into Lambda timeouts.
+    Langfuse traces every LLM call at level 3, with per-request traces, quality scores, and per-node cost. Fast Lambdas need an explicit <code>langfuse.flush()</code> before return because the background shipper thread doesn't get to run otherwise; sub-second Lambdas freeze mid-flight and the traces are gone. Tight timeouts (<code>LANGFUSE_TIMEOUT=2s</code>, <code>FLUSH_INTERVAL=1s</code>) stop Langfuse outages from cascading into Lambda timeouts.
   </p>
 
   <h2>What I'd do differently</h2>
+
   <p>
-    The four-stage Hive partitioning was over-engineered for the actual data
-    volumes; a single curated layer with deeper schema validation would have
-    paid for itself faster. And the first Step Function definition used
-    <code>Retry</code> blocks that overlapped with the Lambda's own retry
-    logic, multiplying the effective retry count — aligning retries
-    explicitly at the Step Function layer would have saved an afternoon.
+    The four-stage Hive partitioning was over-engineered for the actual data volumes. A single curated layer with deeper schema validation would have paid for itself faster. The first Step Function definition also used <code>Retry</code> blocks that overlapped with the Lambda's own retry logic, multiplying the effective retry count; aligning retries explicitly at the Step Function layer would have saved an afternoon. Neither rises to the level of "rewrite", but on the next pipeline of this shape I'd start there.
   </p>
 
   <h2>Links</h2>
   <ul class="post-list">
-    <li><a href="https://fpl.isseikuzuki.co.uk">Live dashboard</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform">Repository</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform/tree/main/docs/adrs">ADRs</a></li>
-    <li><a href="/projects/scout-agent/">Scout Agent — the agentic plane on top</a></li>
+    <li><a href="/projects/scout-agent/">Scout Agent, the agentic plane on top</a></li>
+    <li><a href="/writing/cost-engineering-llm-pipeline/">The cost-engineering writeup</a></li>
   </ul>
 </Base>

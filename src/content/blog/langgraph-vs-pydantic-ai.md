@@ -1,46 +1,30 @@
 ---
-title: LangGraph vs Pydantic AI — a use-case-shape decision
-description: Six weeks apart I picked opposite frameworks for two agent systems. Same engineer, opposite call. The decision rule that made both right.
-pubDate: 2026-05-19
+title: LangGraph and Pydantic AI, six weeks apart
+description: I picked opposite frameworks for two agent systems six weeks apart. Same engineer, opposite call. The framing that made both right.
+pubDate: 2026-05-18
 draft: true
 tags: [llm, agents, langgraph, pydantic-ai, architecture]
 ---
 
-In March I wrote an ADR rejecting LangGraph for our LLM-Ops layer at work. We went with Pydantic AI on top of a custom asyncio graph instead. In May I wrote a second ADR choosing LangGraph for a personal project. Same engineer, opposite call, ~six weeks apart.
+In March I wrote an ADR rejecting LangGraph for an orchestration layer at work. We went with Pydantic AI on top of a custom asyncio graph instead. In May I wrote a second ADR, on a personal project, choosing LangGraph. Same engineer, opposite call, six weeks apart.
 
-That isn't a contradiction, or a vibe shift, or framework fashion. It's because the two systems are different shapes of problem, and the durable thing to take from either decision is the framing — *use-case shape, not capability count, picks the framework*.
+I don't think it's a contradiction, or a change of mind, or framework fashion. The two systems are different shapes of problem, and the durable thing to take from either decision is the framing: use-case shape, not capability count, picks the framework.
 
-This post is the framing, made concrete with the two cases that produced it.
+The first system, at work, is request-scoped. A user asks the system to do a thing; under the hood, a constellation of small agents fan out, do their work in parallel, and the results get assembled into a response. Latency budget is single-digit seconds. Each agent has a narrow job (extract this field, classify that intent, summarise this passage). They don't talk to each other, they don't loop, they each produce one structured output and return. The orchestration is parallel-fan-out with deterministic joins.
 
-## The two systems
+The second system, the [Scout Agent](/projects/scout-agent/) on top of my FPL pipeline, is conversational. A user asks for transfer recommendations on their team. The agent forms a plan, executes some tools (pgvector search, fixture lookup, player history), looks at the results, decides whether the plan still makes sense, possibly amends it, and eventually produces a recommendation. Latency budget is tens of seconds. The user is sitting there watching a streaming response come back. The orchestration is a conditional loop over shared state.
 
-The first one is request-scoped. A user asks the system to do a thing; under the hood, a constellation of small agents fan out, do their work in parallel, and the results get assembled into a response. Latency budget is single-digit seconds. Each agent has a narrow job — extract this field, classify that intent, summarise this passage. They don't talk to each other; they don't loop; they each produce one structured output and return. The orchestration is parallel-fan-out with deterministic joins.
+Stateful-loop on one side, parallel-fan-out on the other.
 
-The second one is conversational. A user asks the agent for transfer recommendations on their FPL team. The agent forms a plan, executes some tools (pgvector search, fixture lookup, player history), looks at the results, decides whether the plan still makes sense, possibly amends it, and eventually produces a recommendation. Latency budget is tens of seconds; the user is sitting there watching a streaming response come back. The orchestration is a conditional loop over shared state.
+LangGraph is built for stateful, multi-step, conditional execution. You declare a graph of nodes, each node mutates a shared state, edges can be conditional, the framework manages the state, the iteration count, the streaming, the cancellation. It includes durable execution if you want it, long-running graphs that survive process restarts, that resume from checkpoints. The mental model is "a state machine you can describe in Python".
 
-Two different shapes. Stateful-loop versus parallel-fan-out.
+Pydantic AI is closer to "type-safe agent primitives". An `Agent[DepsT, OutputT]` is a typed function that takes dependencies and produces a structured output, with tool calling built in, streaming built in, dependency injection built in. There's no graph. If you want orchestration, you compose agents with `asyncio.gather` or a `TaskGroup`. The framework gets out of the way; the language does the rest.
 
-## What each framework is built for
+Both frameworks can be made to do either shape. I want to be clear about that, because every framework comparison post on the internet has a "but you could just use X to do Y" objection. Yes, you could. The question I find more useful is what each framework was built for, what shape of problem it makes simple, and what shape it makes possible but awkward. Capability-counting (which framework supports more features?) is a different question and, in my view, the less helpful one for picking between two well-designed tools.
 
-LangGraph is built for stateful, multi-step, conditional execution. You declare a graph of nodes; each node mutates a shared state; edges can be conditional; the framework manages the state, the iteration count, the streaming, the cancellation. It includes durable execution if you want it — long-running graphs that survive process restarts, that resume from checkpoints. The mental model is "a state machine you can describe in Python."
+For the work problem, Pydantic AI plus a custom asyncio graph wins.
 
-Pydantic AI is closer to "type-safe agent primitives." An `Agent[DepsT, OutputT]` is a typed function that takes dependencies and produces a structured output, with tool calling built in, streaming built in, dependency injection built in. There's no graph. If you want orchestration, you compose agents with `asyncio.gather` or a `TaskGroup`. The framework gets out of the way; the language does the rest.
-
-Both frameworks can be made to do either shape of problem. That isn't the question. The question is what each is *built for* — what shape of problem it makes simple, and what shape it makes possible but awkward.
-
-LangGraph on parallel-fan-out: possible, but you're declaring a graph with N parallel nodes that don't share state, which is a graph DSL describing what `asyncio.gather` already does in five lines.
-
-Pydantic AI on stateful-loop: possible, but you're writing your own state machine, your own iteration limit, your own conditional-edge logic. The framework gives you typed agents; the loop logic is on you.
-
-The "capability count" comparison — *which framework can do more things* — is the wrong question. Both can do everything. The right question is which framework's natural shape matches your problem's natural shape.
-
-## The Curve call
-
-For request-scoped fan-out, Pydantic AI plus a custom asyncio graph wins.
-
-A single user request fires off, say, five parallel agents: one extracting structured fields from a document, one classifying intent, one running entity linkage, one ranking candidates, one generating a short summary. They don't depend on each other; their outputs go into a deterministic merge step. Latency is dominated by the slowest agent (a couple of seconds), not by orchestration overhead.
-
-The asyncio version is short and obvious:
+A single user request fires off, say, five parallel agents: one extracting structured fields from a document, one classifying intent, one running entity linkage, one ranking candidates, one generating a short summary. They don't depend on each other, their outputs go into a deterministic merge step. Latency is dominated by the slowest agent (a couple of seconds), not by orchestration overhead. The asyncio version is short and obvious:
 
 ```python
 async with asyncio.TaskGroup() as tg:
@@ -50,48 +34,24 @@ async with asyncio.TaskGroup() as tg:
 final = merge(field_task.result(), intent_task.result(), ...)
 ```
 
-That's ten lines. The LangGraph version would be a graph with a START node, five parallel branches to a JOIN node, then a final node. Same logical structure, more ceremony, plus a graph DSL to learn and debug. And LangGraph's durable execution — the thing that justifies the abstraction cost — buys nothing here because the request is gone in three seconds. There's nothing to durably persist.
+Ten lines. The LangGraph version would be a graph with a START node, five parallel branches to a JOIN node, then a final node. Same logical structure, more ceremony, plus a graph DSL to learn and debug. LangGraph's durable execution (the thing that justifies the abstraction cost) buys nothing on this workload because the request is gone in three seconds. There's nothing to durably persist.
 
-Bonus argument: every agent in this system already has Pydantic models flowing through the FastAPI layer. Pydantic AI's `OutputT` is the same type. Type-safety end-to-end, no model duplication between API boundary and agent.
+A second reason worth noting: every agent in the system already has Pydantic models flowing through the FastAPI layer at the API boundary. Pydantic AI's `OutputT` is the same type. Type-safety end-to-end, no model duplication between API boundary and agent code, no marshalling step in the middle. It's the same kind of small fit advantage as choosing your ORM to match your serialiser; not load-bearing on its own, but real when the alternative would force a parallel type hierarchy.
 
-The ADR explicitly named the rejection: "LangGraph is not worse than asyncio; it is built for a different shape of problem. Request-scoped agents that run for seconds do not need durable execution, and forcing them through a graph DSL pays the abstraction cost without collecting the abstraction benefit."
-
-## The FPL call
+The ADR for that one is in Confluence; the relevant sentence is "LangGraph is not worse than asyncio; it is built for a different shape of problem". Worth landing that flatly. The Pydantic AI ADR is not a critique of LangGraph.
 
 For the Scout Agent, LangGraph wins.
 
-Four nodes: a planner that turns the user query into a sequence of tool calls; a tool executor that runs them; a reflector that reads the results and decides if the plan needs another iteration; a recommender that produces the final answer. The conditional edge from reflector back to planner is the load-bearing thing — without it, the agent commits to its first plan and can't recover. With it, the agent has up to three passes to course-correct, capped explicitly to bound cost.
+Four nodes: a planner that turns the user query into a sequence of tool calls; a tool executor that runs them; a reflector that reads the results and decides whether the plan needs another iteration; a recommender that produces the final answer. The conditional edge from reflector back to planner is the load-bearing thing. Without it, the agent commits to its first plan and can't recover. With it, the agent has up to three passes to course-correct, capped explicitly to bound cost.
 
-You could write that in asyncio. It's a while loop with a state dict and some functions. It would be 200 lines, and it would slowly accrete the things LangGraph already does: max-iteration logic, conditional routing, state-shape validation, streaming, checkpointing for testing, observable tracing per node. Each of those is small; together they're the abstraction LangGraph already pre-built.
+You could write that in asyncio. It's a while loop with a state dict and some functions. It would be two hundred lines, and it would slowly accrete the things LangGraph already does: max-iteration logic, conditional routing, state-shape validation, streaming, checkpointing for testing, observable tracing per node. Each of those is small individually. Together they're the abstraction LangGraph already pre-built. The shape matches; the framework gives you the affordances the problem actually has; use it<sup>1</sup>.
 
-The shape matches. The framework gives you the affordances the problem actually has. Use it.
+The diagnostic I find myself reaching for when other people ask me about this is roughly: describe your problem in one sentence, focused on the shape of orchestration. If it's parallel-fan-out with deterministic joins, asyncio plus typed agent primitives is enough. If it's a stateful conditional loop with branching and iteration caps, reach for something that pre-builds those primitives so you're not re-implementing them under deadline pressure. If two frameworks both fit cleanly, pick on local context (already-installed dependencies, team familiarity, latency profile). If one of them is awkward for your shape, that awkwardness is the signal.
 
-## The rule
+I want to head off the "but if your shape changes, you'll regret the choice" objection. Real answer: yes, you will, and that's fine. Frameworks aren't forever. When the work system starts needing durable execution for long-running workflows (it will, probably within a year), we'll port the relevant agents to LangGraph or Temporal and accept the migration cost. The system was right for the shape it had at the time of building. The same is true on the FPL side. If the Scout Agent ever needs to handle parallel users, fanning their requests out across nodes that don't share state, the LangGraph shape will start to feel heavy and I'll port the affected nodes back to plain asyncio. Both decisions are revisable; both will be revised; that's not the same as either being wrong.
 
-*Use-case shape, not capability count, picks the framework.*
+The thing that surprised me most, looking back at the two ADRs side by side, is how clean the symmetry is once the framing is right. The two systems share roughly zero implementation, but they share a decision rule. That feels right to me. Most of the framework-choice posts I read are anti-X or pro-Y. The interesting position to defend is harder: same engineer, two opposite choices, both right.
 
-A capability-count comparison reads "LangGraph has durable execution, checkpointing, sub-graphs; Pydantic AI has type-safe outputs, dependency injection. They each have things the other doesn't, so pick the one with more capabilities relevant to your problem."
+---
 
-That's true but useless. It treats frameworks as feature lists and your problem as a set of feature requirements. Frameworks aren't feature lists. They're opinions about what shape of work you're doing.
-
-The shape-matching rule cuts the decision differently:
-
-If your problem is parallel-fan-out with deterministic joins, the framework you want is the language plus typed agents. Anything more is ceremony. Pydantic AI sits exactly there.
-
-If your problem is a stateful conditional loop with branching and iteration caps, the framework you want is something that pre-builds those primitives so you're not re-implementing them under the time pressure of a real deadline. LangGraph sits exactly there.
-
-If your problem is sequential pipelines with no branching, pick the lightest thing. Both frameworks would work; the difference doesn't matter; pick on import-line ergonomics and move on.
-
-If your problem is human-in-the-loop multi-turn — emails, approvals, week-long workflows — pick the one with durable execution. That's LangGraph in this comparison; it's also Temporal, also Inngest, also a dozen others.
-
-## What this is and isn't
-
-This isn't "Pydantic AI good, LangGraph bad" or vice versa. The single most important sentence I can write here is that both frameworks are well-designed for what they're built for. They make different choices about what's primitive and what's composable. Picking between them on capability count means measuring them by the wrong axis.
-
-It also isn't "always rewrite to match the framework." If you have a working LangGraph system that's fan-out shaped, leave it. Switching framework to save 20 lines of orchestration code is almost always the wrong trade.
-
-The thing to internalise is the diagnostic. When you find yourself reading framework comparison posts and counting checkmarks, stop. Describe your problem in one sentence — *what's the shape of orchestration this thing needs* — and let the answer pick itself. If two frameworks both fit cleanly, pick on local-context reasons (already-installed dependencies, team familiarity, latency profile). If one of them is awkward for your shape, that's the signal.
-
-The six-weeks-apart Curve and FPL decisions both came out clean because the shape was named first and the framework picked second. The opposite order — "we should use LangGraph because it's powerful" or "we should use Pydantic AI because it's lighter" — produces decisions that look right in isolation and break six months in when the system has grown into a shape the framework wasn't built for.
-
-Diagnose the shape. Pick the framework that fits. Re-evaluate when the shape changes.
+<sup>1</sup> The two-week sanity check I ran before committing to LangGraph: prototype the four-node graph as a plain asyncio while-loop, time-box at four hours, ship if it's clean. Mine wasn't. By hour three I'd reinvented `state.update` plus an iteration counter plus a half-decent conditional router plus streaming. At that point you might as well take the framework.

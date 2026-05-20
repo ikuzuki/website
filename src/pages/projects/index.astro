@@ -4,53 +4,38 @@ import Base from "../../layouts/Base.astro";
 
 <Base
   title="Projects"
-  description="Selected personal projects — data platforms, LLM infrastructure, and the things that make them work in production."
+  description="Selected personal projects across data platforms, LLM infrastructure, and the things that make them work in production."
 >
   <h1>Projects</h1>
 
   <p>
-    These are the larger personal builds. Each one exists because I wanted to
-    learn a specific shape of system end-to-end; the write-ups focus on the
-    decisions and the trade-offs rather than the feature list.
+    The larger personal builds. Each one exists because I wanted to learn a specific shape of system end-to-end; the write-ups focus on decisions and trade-offs rather than feature lists.
   </p>
 
-  <h2><a href="/projects/fpl-pulse/">FPL Pulse — weekly enrichment pipeline</a></h2>
+  <h2><a href="/projects/fpl-pulse/">FPL Pulse, weekly enrichment pipeline</a></h2>
   <p class="muted">
-    AWS Lambda · Step Functions · S3 · Anthropic Haiku/Sonnet · Langfuse
+    AWS Lambda, Step Functions, S3, Anthropic Haiku and Sonnet, Langfuse.
   </p>
   <p>
-    A weekly LLM enrichment pipeline for Fantasy Premier League. Five
-    collectors fan out across the FPL API, Understat, and news sources into a
-    four-stage S3 lake; a Step Function drives enrichment over ~700 players
-    per gameweek through Anthropic Haiku and Sonnet, cost-engineered to sit
-    inside the AWS free tier with the Claude API as the only meaningful spend.
-    The deepest write-up on the site.
+    A weekly LLM enrichment pipeline for Fantasy Premier League. Five collectors fan out across the FPL API, Understat, and news sources into a four-stage S3 lake; a Step Function drives enrichment over roughly 700 players per gameweek through Anthropic Haiku and Sonnet, cost-engineered to sit inside the AWS free tier with the Claude API as the only meaningful spend. The deepest write-up on the site.
     <a href="/projects/fpl-pulse/">Read →</a>
   </p>
 
-  <h2><a href="/projects/scout-agent/">Scout Agent — agentic recommendations</a></h2>
+  <h2><a href="/projects/scout-agent/">Scout Agent, agentic recommendations</a></h2>
   <p class="muted">
-    LangGraph · pgvector · Lambda Function URL · SSE streaming
+    LangGraph, pgvector, Lambda Function URL, SSE streaming.
   </p>
   <p>
-    The interactive plane on top of the FPL pipeline. A four-node LangGraph
-    state machine (planner → tool_executor → reflector → recommender, looped
-    up to three times) runs over a Neon pgvector store and streams transfer
-    recommendations to the dashboard over Server-Sent Events through a Lambda
-    Function URL. Shipped May 2026 after the OAC-on-POST landmine cost me an
-    evening and an ADR.
+    The interactive plane on top of the FPL pipeline. A four-node LangGraph state machine (planner, tool_executor, reflector, recommender, looped up to three times) runs over a Neon pgvector store and streams transfer recommendations to the dashboard over Server-Sent Events through a Lambda Function URL. Shipped May 2026 after the OAC-on-POST landmine cost me an evening and an ADR.
     <a href="/projects/scout-agent/">Read →</a>
   </p>
 
-  <h2><a href="/projects/knowledge-vault/">Knowledge vault + personal plugin</a></h2>
+  <h2><a href="/projects/knowledge-vault/">Knowledge vault and personal plugin</a></h2>
   <p class="muted">
-    Plain markdown · Claude Code plugin · no embeddings, no MCP, no daemon
+    Plain markdown, Claude Code plugin, no embeddings, no MCP, no daemon.
   </p>
   <p>
-    A curated personal knowledge base read directly by Claude Code via Read,
-    Grep, and Glob. Started as a hybrid FTS5/LanceDB MCP server with an Ollama
-    embedding pipeline, then deleted entirely once the vault was small enough
-    to fit in context. The interesting bit is what I removed and why.
+    A curated personal knowledge base read directly by Claude Code via Read, Grep, and Glob. Started as a hybrid FTS5 plus LanceDB MCP server with an Ollama embedding pipeline, then deleted entirely once the vault was small enough to fit in context. The interesting bit is what I removed and why.
     <a href="/projects/knowledge-vault/">Read →</a>
   </p>
 </Base>

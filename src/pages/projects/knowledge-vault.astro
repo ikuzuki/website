@@ -3,129 +3,58 @@ import Base from "../../layouts/Base.astro";
 ---
 
 <Base
-  title="Knowledge vault + personal plugin"
-  description="A plain-markdown personal knowledge base for Claude Code, built once as a hybrid FTS5/LanceDB MCP server and then deleted in favour of Read/Grep/Glob."
+  title="Knowledge vault and personal plugin"
+  description="A plain-markdown personal knowledge base for Claude Code, with a companion plugin that handles search, distillation, and consistency."
 >
   <p class="muted"><a href="/projects/">← Projects</a></p>
 
-  <h1>Knowledge vault + personal plugin</h1>
+  <h1>Knowledge vault and personal plugin</h1>
   <p class="muted">
-    Plain markdown · Claude Code plugin · no embeddings · no MCP · no daemon
+    Plain markdown, Claude Code plugin, no embeddings, no MCP, no daemon.
   </p>
 
   <figure>
-    <img src="/diagrams/vault-architecture.svg" alt="Vault architecture: inbox/ raw notes are promoted via the distil-vault skill into curated knowledge-vault/ folders (strategy, patterns, playbooks, decisions, projects), with the issei-plugin shipping skills that read directly via Read, Grep, and Glob." />
+    <img
+      src="/diagrams/vault-architecture.svg"
+      alt="Vault architecture: inbox/ raw notes are promoted via the distil-vault skill into curated knowledge-vault/ folders (strategy, patterns, playbooks, decisions, projects), with the personal plugin shipping skills that read directly via Read, Grep, and Glob."
+    />
     <figcaption class="muted">
-      Raw notes in <code>inbox/</code> → <code>distil-vault</code> skill → curated knowledge-vault folders, read directly by Claude.
+      Raw notes in <code>inbox/</code>, distilled into curated folders, read directly by Claude through <code>Read</code>, <code>Grep</code>, <code>Glob</code>.
     </figcaption>
   </figure>
 
   <h2>What it is</h2>
+
   <p>
-    A curated personal knowledge base — strategy, decisions, patterns,
-    playbooks, project hubs, people notes, voice — that Claude Code reads
-    directly from the filesystem with Read, Grep, and Glob. About 216
-    markdown files at last count, fitting inside Claude's context window
-    with room to spare. The companion plugin (<code>issei-plugin</code>)
-    ships the skills that interact with it:
-    <code>search-vault</code>, <code>distil-vault</code>,
-    <code>lint-vault</code>, plus a handful of voice and meeting helpers.
+    A curated personal knowledge base (strategy, decisions, patterns, playbooks, project hubs, people notes, voice) that Claude Code reads directly from the filesystem through <code>Read</code>, <code>Grep</code>, and <code>Glob</code>. About 216 markdown files at last count, fitting inside Claude's context window with room to spare. The companion plugin ships three skills that interact with it: <code>search-vault</code>, <code>distil-vault</code>, <code>lint-vault</code>, plus a handful of voice and meeting helpers.
   </p>
 
-  <h2>Why the project is interesting</h2>
+  <h2>How it's structured</h2>
+
   <p>
-    Not because of what it is now, but because of what it used to be.
-  </p>
-  <p>
-    The first version was an MCP server. FastMCP protocol layer; SQLite FTS5
-    for lexical search; LanceDB for vectors; Ollama
-    <code>nomic-embed-text:v1.5</code> for embeddings; a file watcher that
-    re-indexed on every change; a hybrid scorer that blended FTS and vector
-    similarity. About 600 lines of plumbing. The Claude session would call
-    a custom tool, the tool would run hybrid retrieval, and the top-k
-    chunks would come back as context.
-  </p>
-  <p>
-    I deleted all of it.
+    A folder taxonomy (<code>strategy</code>, <code>patterns</code>, <code>playbooks</code>, <code>decisions</code>, <code>projects</code>, <code>people</code>, <code>voice</code>, <code>references</code>, <code>daily</code>) with a frontmatter schema enforced on every note: <code>title</code>, <code>created</code>, <code>tags</code>, <code>links</code>. The <code>links</code> field is the load-bearing one, because every new note has to declare its inbound and outbound edges. That forces the writer to locate the new content in the existing graph rather than letting it pile up un-linked.
   </p>
 
-  <h2>Why I deleted it</h2>
   <p>
-    Three things happened in the same week. First, I noticed the vault was
-    216 files and growing — but not so fast that it would ever stop fitting
-    in context. The "retrieval problem" the MCP was solving wasn't a real
-    problem at this scale. Second, I measured the search-quality lift over a
-    plain Grep + Glob workflow on the same corpus: 3–5%, on heavily curated
-    short documents. Not nothing, but not 600 lines of plumbing and an
-    Ollama daemon dependency. Third, three real bugs in the indexing path
-    showed up at once: the Windows file watcher missed MCP-authored files
-    (atomic rename via <code>os.replace</code> doesn't fire
-    <code>on_modified</code> reliably on the renamed target); FTS and vector
-    writes weren't atomic, leaving the two indexes ~20% out of sync; the
-    chunk tokenizer didn't match the embedder's, so retrieval was scoring
-    against the wrong segments.
-  </p>
-  <p>
-    At that point the cost-benefit was clear. The MCP stack was solving a
-    problem that didn't exist yet, generating problems that did, and
-    blocking the actual lift — which is the discipline of distilling notes
-    well — behind plumbing maintenance.
+    The three skills do work the human can't reliably do at write time. <code>search-vault</code> is a <code>Glob</code> plus <code>Grep</code> plus <code>Read</code> pipeline (no index, no embedding, just patterns over filenames and frontmatter). <code>distil-vault</code> takes raw inbox material and produces a curated note plus updates to 5 to 15 cross-referenced neighbours, so synthesis happens once, by the LLM, when the note is written. <code>lint-vault</code> runs whole-vault consistency checks (missing backlinks, orphan files, frontmatter drift) on demand.
   </p>
 
-  <h2>What replaced it</h2>
   <p>
-    A markdown convention and three plugin skills.
-  </p>
-  <p>
-    The convention is a folder taxonomy (<code>strategy</code>,
-    <code>patterns</code>, <code>playbooks</code>, <code>decisions</code>,
-    <code>projects</code>, <code>people</code>, <code>voice</code>,
-    <code>references</code>, <code>daily</code>) with a frontmatter schema
-    that enforces <code>title</code>, <code>created</code>,
-    <code>tags</code>, and <code>links</code> on every note. The
-    <code>links</code> field is the load-bearing one — every new note has
-    to declare its inbound and outbound edges, which forces the writer to
-    locate the new content in the existing graph rather than letting it pile
-    up un-linked.
-  </p>
-  <p>
-    The skills do the work the MCP used to do, but at write time instead of
-    query time. <code>search-vault</code> is a Glob + Grep + Read pipeline —
-    no index, no embedding, just patterns over filenames and frontmatter.
-    <code>distil-vault</code> takes raw inbox material and produces a
-    curated note <em>plus</em> updates to 5–15 cross-referenced
-    neighbours, so synthesis happens once, by the LLM, when the note is
-    written. <code>lint-vault</code> runs whole-vault consistency checks —
-    missing backlinks, orphan files, frontmatter drift.
-  </p>
-  <p>
-    The shift in framing: synthesis happens at write time (the LLM updates
-    5–15 cross-referenced pages when new material lands), not at query time.
-    That's what keeps the vault navigable as it grows; without it, files
-    pile up un-linked and the "Claude reads the whole vault" affordance
-    erodes.
+    The framing that turned out to matter most: synthesis happens at write time, not at query time. When a new note lands, the LLM has it and the affected neighbours in context simultaneously, and can refresh the cross-references then. By the time I'm querying, the vault is already coherent. That's the load-bearing thing; without it, files accumulate un-linked and the "Claude reads the whole vault" affordance erodes.
   </p>
 
-  <h2>The pattern the project actually demonstrated</h2>
+  <h2>The history</h2>
+
   <p>
-    Vector retrieval is the right answer for a class of problem — long-form
-    corpora, mixed-domain knowledge, multi-tenant systems, RAG over content
-    you don't control. None of those apply to a personal vault. The
-    interesting bit is recognising when the platform-level solution is the
-    wrong size for the actual workload, and being willing to delete 600
-    lines of code that worked.
-  </p>
-  <p>
-    There's a longer version of this argument in
-    <a href="/writing/">writing</a>.
+    The current shape isn't where I started. The April version was a full hybrid retrieval stack: FastMCP server, SQLite FTS5, LanceDB vector store, Ollama embedding pipeline, file watcher, hybrid scorer. About 600 lines of plumbing. After two months of running it I deleted the whole stack and replaced it with what's above. The full argument for why (three things that landed in the same week, plus a Karpathy note that snapped the framing into focus) is in <a href="/writing/vault-without-embeddings/">the post on deleting the embedding pipeline</a>.
   </p>
 
   <h2>Links</h2>
   <ul class="post-list">
     <li><span class="muted">Repository:</span> private (vault contains personal notes)</li>
+    <li><a href="/writing/vault-without-embeddings/">Why I deleted the embedding pipeline</a></li>
     <li>
-      <a href="https://github.com/anthropics/claude-code">Claude Code</a>
-      — the runtime the plugin ships into
+      <a href="https://github.com/anthropics/claude-code">Claude Code</a>, the runtime the plugin ships into
     </li>
   </ul>
 </Base>
