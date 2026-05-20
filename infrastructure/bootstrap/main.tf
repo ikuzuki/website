@@ -157,6 +157,57 @@ data "aws_iam_policy_document" "cicd" {
     ]
     resources = ["*"]
   }
+
+  # Route 53 — needed for the custom-domain wiring in environments/dev/domain.tf.
+  # ListHostedZones + GetChange are account-wide actions that don't support
+  # resource-level scoping (verified against AWS service-authorization docs).
+  statement {
+    sid    = "Route53AccountWideReads"
+    effect = "Allow"
+    actions = [
+      "route53:ListHostedZones",
+      "route53:GetChange",
+    ]
+    resources = ["*"]
+  }
+
+  # Hosted-zone-scoped reads and writes. Scoped to any hosted zone in this
+  # account (account is single-tenant — only isseikuzuki.co.uk lives here).
+  # ListTagsForResource is required by the aws_route53_zone data source on
+  # every plan/refresh, not just on the initial create.
+  statement {
+    sid    = "Route53ManageHostedZones"
+    effect = "Allow"
+    actions = [
+      "route53:GetHostedZone",
+      "route53:ListResourceRecordSets",
+      "route53:ListTagsForResource",
+      "route53:ChangeResourceRecordSets",
+      "route53:ChangeTagsForResource",
+    ]
+    resources = ["arn:aws:route53:::hostedzone/*"]
+  }
+
+  # ACM — needed for the custom-domain certs created in environments/dev/domain.tf.
+  # Most ACM actions cannot be reliably resource-scoped at policy-write time
+  # because cert ARNs include a UUID that doesn't exist until apply.
+  statement {
+    sid    = "AcmManageCertificates"
+    effect = "Allow"
+    actions = [
+      "acm:RequestCertificate",
+      "acm:DescribeCertificate",
+      "acm:DeleteCertificate",
+      "acm:ListCertificates",
+      "acm:GetCertificate",
+      "acm:AddTagsToCertificate",
+      "acm:RemoveTagsFromCertificate",
+      "acm:ListTagsForCertificate",
+      "acm:UpdateCertificateOptions",
+      "acm:RenewCertificate",
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role" "cicd" {
