@@ -6,5 +6,4 @@ export const SITE_DESCRIPTION =
 export const AUTHOR = "Issei Kuzuki";
 export const LINKEDIN_URL = "https://www.linkedin.com/in/issei-kuzuki/";
 export const GITHUB_URL = "https://github.com/ikuzuki";
-// TODO: swap to a personal address once chosen (not the Curve one).
-export const CONTACT_EMAIL = "hello@issei.dev";
+export const CONTACT_EMAIL = "ikuzuki0@gmail.com";
