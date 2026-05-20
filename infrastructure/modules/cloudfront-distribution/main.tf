@@ -1,6 +1,7 @@
 # CloudFront distribution fronting the private S3 site bucket via OAC.
-# Default cert; custom-domain wiring (aliases + ACM cert in us-east-1) is
-# left for a follow-up once a domain is registered.
+# Custom-domain wiring is optional: pass `acm_certificate_arn` + `aliases`
+# to attach a custom domain, otherwise the default *.cloudfront.net cert
+# is used.
 
 resource "aws_cloudfront_origin_access_control" "site" {
   name                              = "${var.name}-oac"
@@ -16,6 +17,7 @@ resource "aws_cloudfront_distribution" "site" {
   default_root_object = "index.html"
   price_class         = var.price_class
   comment             = var.name
+  aliases             = var.aliases
 
   origin {
     origin_id                = "site"
@@ -64,7 +66,10 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = var.acm_certificate_arn == null
+    acm_certificate_arn            = var.acm_certificate_arn
+    ssl_support_method             = var.acm_certificate_arn == null ? null : "sni-only"
+    minimum_protocol_version       = var.acm_certificate_arn == null ? null : "TLSv1.2_2021"
   }
 }
 

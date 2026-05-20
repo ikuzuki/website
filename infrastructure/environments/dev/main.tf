@@ -42,6 +42,8 @@ module "cdn" {
   source                           = "../../modules/cloudfront-distribution"
   name                             = local.name
   site_bucket_regional_domain_name = module.site_bucket.bucket_regional_domain_name
+  acm_certificate_arn              = aws_acm_certificate_validation.site.certificate_arn
+  aliases                          = [var.domain_name, "www.${var.domain_name}"]
 }
 
 # Bucket policy lives here so it can reference the distribution ARN without

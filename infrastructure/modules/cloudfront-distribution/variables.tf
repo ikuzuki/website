@@ -13,3 +13,15 @@ variable "price_class" {
   type        = string
   default     = "PriceClass_100"
 }
+
+variable "acm_certificate_arn" {
+  description = "ARN of an ACM certificate in us-east-1 to serve HTTPS for the custom domain. If null, CloudFront uses its default *.cloudfront.net certificate."
+  type        = string
+  default     = null
+}
+
+variable "aliases" {
+  description = "List of custom domain names (CNAMEs) the distribution serves. Each must be covered by the ACM certificate."
+  type        = list(string)
+  default     = []
+}
