@@ -38,7 +38,7 @@ Ten lines. The LangGraph version would be a graph with a START node, five parall
 
 A second reason worth noting: every agent in the system already had structured Pydantic outputs flowing through the rest of the codebase. Pydantic AI's `OutputT` slots into the same type hierarchy. Type-safety end-to-end, no model duplication between layers, no marshalling step in the middle. It's the same kind of small fit advantage as choosing your ORM to match your serialiser; not load-bearing on its own, but real when the alternative would force a parallel type hierarchy.
 
-The ADR for that one is in Confluence; the relevant sentence is "LangGraph is not worse than asyncio; it is built for a different shape of problem". Worth landing that flatly. The Pydantic AI ADR is not a critique of LangGraph.
+Worth landing this flat before moving on: LangGraph is built for a different shape of problem than asyncio, not a worse one. Choosing asyncio for this orchestration is a comment on the shape, not a criticism of the framework.
 
 For the Scout Agent, LangGraph wins.
 

@@ -28,7 +28,7 @@ import Base from "../../layouts/Base.astro";
   </p>
 
   <p>
-    The goal was a personal-scale version of the production shape I work on day-to-day (batch pipelines, enrichment, observability, IaC), plus the freedom to redesign it from the ground up with everything I've learned.
+    The goal was a production-shape build at personal scale (batch pipelines, enrichment, observability, IaC), with the freedom to redesign from the ground up with everything I've learned.
   </p>
 
   <h2>The shape</h2>
@@ -52,7 +52,7 @@ import Base from "../../layouts/Base.astro";
   </p>
 
   <p>
-    One evening the pipeline went green from Step Functions and zero downstream states had executed properly. Every Task in the execution history was marked <code>LambdaFunctionSucceeded</code>, the run summary was clean, the curated outputs in S3 were empty. CloudWatch logs from the collector Lambda were full of Cloudflare 403s. It took longer than it should have to spot the gap. A Lambda that returns <code>&#123;"statusCode": 500, "body": ...&#125;</code> is <code>LambdaFunctionSucceeded</code> from Step Functions' perspective: the invocation completed, a JSON body came back, the SDK didn't throw. The HTTP status inside the body is application-level information that Step Functions doesn't look at. My <code>CheckShouldRun</code> state had assumed otherwise, and the Cloudflare 403 inside the collector had propagated as a successful run with empty data, which then took out four downstream states with cryptic JsonPath errors. The fix turned out to be a pattern rather than a patch: after every Task state that can return a non-success body, the next state has to be a Choice checking the actual response. The PR shipped as <a href="https://github.com/ikuzuki/fpl-platform/pull/102">fpl-platform#102</a>; the pattern sits in the vault and has already saved an evening on the day job.
+    One evening the pipeline went green from Step Functions and zero downstream states had executed properly. Every Task in the execution history was marked <code>LambdaFunctionSucceeded</code>, the run summary was clean, the curated outputs in S3 were empty. CloudWatch logs from the collector Lambda were full of Cloudflare 403s. It took longer than it should have to spot the gap. A Lambda that returns <code>&#123;"statusCode": 500, "body": ...&#125;</code> is <code>LambdaFunctionSucceeded</code> from Step Functions' perspective: the invocation completed, a JSON body came back, the SDK didn't throw. The HTTP status inside the body is application-level information that Step Functions doesn't look at. My <code>CheckShouldRun</code> state had assumed otherwise, and the Cloudflare 403 inside the collector had propagated as a successful run with empty data, which then took out four downstream states with cryptic JsonPath errors. The fix turned out to be a pattern rather than a patch: after every Task state that can return a non-success body, the next state has to be a Choice checking the actual response. The PR shipped as <a href="https://github.com/ikuzuki/fpl-platform/pull/102">fpl-platform#102</a>; the pattern sits in the vault for next time.
   </p>
 
   <p>

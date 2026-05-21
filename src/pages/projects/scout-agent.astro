@@ -40,7 +40,7 @@ import Base from "../../layouts/Base.astro";
   <h2>The framework choice</h2>
 
   <p>
-    Six weeks before building this, I'd written an ADR at work choosing Pydantic AI over LangGraph for our orchestration layer. Same engineer, opposite call. The framing that made both right (use-case shape, not capability count, picks the framework) is the spine of <a href="/writing/langgraph-vs-pydantic-ai/">the LangGraph and Pydantic AI post</a>. Short version: parallel-fan-out with deterministic joins doesn't need a graph DSL; stateful conditional loops with iteration caps do.
+    Six weeks before building this, I'd written an ADR on another project choosing Pydantic AI over LangGraph for an orchestration layer. Same engineer, opposite call. The framing that made both right (use-case shape, not capability count, picks the framework) is the spine of <a href="/writing/langgraph-vs-pydantic-ai/">the LangGraph and Pydantic AI post</a>. Short version: parallel-fan-out with deterministic joins doesn't need a graph DSL; stateful conditional loops with iteration caps do.
   </p>
 
   <h2>The CloudFront landmine</h2>
@@ -66,7 +66,7 @@ import Base from "../../layouts/Base.astro";
     <li><a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-009-scout-agent-langgraph.md">ADR-009, why LangGraph here</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-010-cloudfront-shared-secret.md">ADR-010, the CloudFront shared secret</a></li>
     <li><a href="/projects/fpl-pulse/">FPL Pulse, the batch pipeline underneath</a></li>
-    <li><a href="/writing/langgraph-vs-pydantic-ai/">Why I chose LangGraph here and rejected it at work</a></li>
+    <li><a href="/writing/langgraph-vs-pydantic-ai/">Why I chose LangGraph here and rejected it on another project</a></li>
     <li><a href="/writing/sse-streaming-from-lambda/">The OAC POST 403 evening</a></li>
   </ul>
 </Base>
