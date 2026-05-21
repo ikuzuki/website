@@ -60,7 +60,7 @@ For the Scout Agent, LangGraph wins.
 
 Four nodes: a planner that turns the user query into a sequence of tool calls; a tool executor that runs them; a reflector that reads the results and decides whether the plan needs another iteration; a recommender that produces the final answer. The conditional edge from reflector back to planner is the load-bearing thing. Without it, the agent commits to its first plan and can't recover. With it, the agent has up to three passes to course-correct, capped explicitly to bound cost.
 
-You could write that in asyncio. It's a while loop with a state dict and some functions. It would be two hundred lines, and it would slowly accrete the things LangGraph already does: max-iteration logic, conditional routing, state-shape validation, streaming, checkpointing for testing, observable tracing per node. Each of those is small individually. Together they're the abstraction LangGraph already pre-built. The shape matches; the framework gives you the affordances the problem actually has; use it<sup>1</sup>.
+You could write that in asyncio. It's a while loop with a state dict and some functions. It would be two hundred lines, and it would slowly accrete the things LangGraph already does: max-iteration logic, conditional routing, state-shape validation, streaming, checkpointing for testing, observable tracing per node. Each of those is small individually. Together they're the abstraction LangGraph already pre-built. The shape matches; the framework gives you the affordances the problem actually has; use it.
 
 <figure>
   <img src="/diagrams/langgraph-vs-pydantic-ai.svg" alt="Decision tree: what is the shape of the orchestration? Four branches lead to recommendations: parallel fan-out goes to Pydantic AI plus asyncio.TaskGroup; stateful loop goes to LangGraph; sequential pipeline lands on 'pick on context'; durable or human-in-the-loop lands on LangGraph with checkpointing or Temporal." />
@@ -74,7 +74,3 @@ I want to head off the "but if your shape changes, you'll regret the choice" obj
 The thing that surprised me most, looking back at the two ADRs side by side, is how clean the symmetry is once the framing is right. The two systems share roughly zero implementation, but they share a decision rule. That feels right to me. Most of the framework-choice posts I read are anti-X or pro-Y. The interesting position to defend is harder: same engineer, two opposite choices, both right.
 
 The deployed version of the Scout Agent runs at [fpl.isseikuzuki.co.uk/chat](https://fpl.isseikuzuki.co.uk/chat) if you want to prod the four-node graph this post describes. Paste a team ID, ask for a transfer recommendation, watch the loop run.
-
----
-
-<sup>1</sup> The two-week sanity check I ran before committing to LangGraph: prototype the four-node graph as a plain asyncio while-loop, time-box at four hours, ship if it's clean. Mine wasn't. By hour three I'd reinvented `state.update` plus an iteration counter plus a half-decent conditional router plus streaming. At that point you might as well take the framework.
