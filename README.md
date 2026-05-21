@@ -84,31 +84,25 @@ tags: [aws, llm]
 
 ## Domain
 
-Currently published at the CloudFront default domain
-`https://de5chlefe7o13.cloudfront.net/`. Custom domain wiring (ACM cert
-in `us-east-1`, Route 53 alias, CloudFront alternate domain name) lands
-in a follow-up once the domain is registered.
+Live at `https://isseikuzuki.co.uk/`. The CloudFront distribution serves
+the apex and `www.` via an ACM cert in `us-east-1` (CloudFront only
+reads certs from us-east-1), with Route 53 alias records pointing both
+hostnames at the distribution.
 
-## Activating the deploy workflow
+The original CloudFront default domain (`*.cloudfront.net`) still
+resolves; the custom domain is layered on via the `aliases` argument
+in `infrastructure/modules/cloudfront-distribution` plus DNS-validated
+cert.
 
-The first push happened with a token that lacked `workflow` scope, so
-the deploy file is parked at `.github/workflows.pending-deploy.yml`.
-To activate:
+## Repo secrets
 
-```bash
-gh auth refresh -s workflow
-git mv .github/workflows.pending-deploy.yml .github/workflows/deploy.yml
-git commit -m "ci: enable deploy workflow"
-git push
-```
-
-Repo secrets `AWS_CICD_ROLE_ARN` and `CLOUDFRONT_DISTRIBUTION_ID` are
-already set.
+`AWS_CICD_ROLE_ARN` and `CLOUDFRONT_DISTRIBUTION_ID` are set on the
+repo. Re-run `terraform apply` if either rotates.
 
 ## Current state
 
 - Bootstrap applied: state bucket `issei-website-tf-state`, lock table
   `issei-website-tf-lock`, role `Issei-Website-CICD-Role`.
-- Dev env applied: bucket `issei-website-dev`, distribution
-  `E3MCUNVBQ8D4EU`, domain `de5chlefe7o13.cloudfront.net`.
-- Site is live and serving the placeholder content.
+- Dev env applied: bucket `issei-website-dev`, CloudFront distribution
+  fronting the apex and `www.` of `isseikuzuki.co.uk`.
+- Site is live; deploys land on every push to `main`.

@@ -1,8 +1,8 @@
 ---
 title: LangGraph and Pydantic AI, six weeks apart
 description: I picked opposite frameworks for two agent systems six weeks apart. Same engineer, opposite call. The framing that made both right.
-pubDate: 2026-05-18
-draft: true
+pubDate: 2026-05-20
+draft: false
 tags: [llm, agents, langgraph, pydantic-ai, architecture]
 ---
 
@@ -45,6 +45,11 @@ For the Scout Agent, LangGraph wins.
 Four nodes: a planner that turns the user query into a sequence of tool calls; a tool executor that runs them; a reflector that reads the results and decides whether the plan needs another iteration; a recommender that produces the final answer. The conditional edge from reflector back to planner is the load-bearing thing. Without it, the agent commits to its first plan and can't recover. With it, the agent has up to three passes to course-correct, capped explicitly to bound cost.
 
 You could write that in asyncio. It's a while loop with a state dict and some functions. It would be two hundred lines, and it would slowly accrete the things LangGraph already does: max-iteration logic, conditional routing, state-shape validation, streaming, checkpointing for testing, observable tracing per node. Each of those is small individually. Together they're the abstraction LangGraph already pre-built. The shape matches; the framework gives you the affordances the problem actually has; use it<sup>1</sup>.
+
+<figure>
+  <img src="/diagrams/langgraph-vs-pydantic-ai.svg" alt="Decision tree: what is the shape of the orchestration? Four branches lead to recommendations: parallel fan-out goes to Pydantic AI plus asyncio.TaskGroup; stateful loop goes to LangGraph; sequential pipeline lands on 'pick on context'; durable or human-in-the-loop lands on LangGraph with checkpointing or Temporal." />
+  <figcaption>The diagnostic, in tree form. Four shapes, four answers.</figcaption>
+</figure>
 
 The diagnostic I find myself reaching for when other people ask me about this is roughly: describe your problem in one sentence, focused on the shape of orchestration. If it's parallel-fan-out with deterministic joins, asyncio plus typed agent primitives is enough. If it's a stateful conditional loop with branching and iteration caps, reach for something that pre-builds those primitives so you're not re-implementing them under deadline pressure. If two frameworks both fit cleanly, pick on local context (already-installed dependencies, team familiarity, latency profile). If one of them is awkward for your shape, that awkwardness is the signal.
 

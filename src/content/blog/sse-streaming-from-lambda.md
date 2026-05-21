@@ -1,8 +1,8 @@
 ---
 title: An evening with OAC, POST, and SigV4
 description: I tried to put a CloudFront-fronted Lambda Function URL with OAC and AWS_IAM in front of an SSE-streaming agent. 100% of POSTs returned 403. Here's the evening.
-pubDate: 2026-05-15
-draft: true
+pubDate: 2026-05-17
+draft: false
 tags: [aws, lambda, cloudfront, sse, streaming]
 ---
 
@@ -19,6 +19,11 @@ Here is where it falls apart. CloudFront with OAC computes the body hash if (and
 Every AWS example for OAC plus Function URL uses GET. Every blog post showing the pattern uses GET. The pattern is documented for GETs and silently broken for streaming POSTs. I'd been pattern-matching off examples that never exercised my actual case.
 
 The fix turned out to be embarrassingly simple. Set the Function URL to `auth_type = NONE`, which makes the URL technically public, then inject a shared-secret header on every CloudFront origin request. The Lambda's FastAPI middleware rejects any request whose `X-CloudFront-Secret` header doesn't match the expected value, which is read from SSM SecureString at cold start and cached for the warm lifetime of the container. The Function URL is "public" in name and unreachable in practice; anyone hitting the raw URL gets a 403 from the middleware because they don't have the header. CloudFront is the only thing that knows the header, so CloudFront is the only thing that can reach the Lambda.
+
+<figure>
+  <img src="/diagrams/cloudfront-shared-secret.svg" alt="Two paths converge on the FastAPI middleware. Browser through CloudFront injects the X-CloudFront-Secret header and reaches the Scout Agent; anyone hitting the raw Function URL directly has no header and gets rejected. A second DynamoDB budget cap layer rejects with 429 if the per-request budget is exceeded." />
+  <figcaption>Two layers of defence in depth. Shared-secret header at the edge, DynamoDB budget and rate cap at the runtime.</figcaption>
+</figure>
 
 The Terraform shape is roughly:
 
