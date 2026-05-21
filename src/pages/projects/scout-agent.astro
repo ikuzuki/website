@@ -24,7 +24,7 @@ import Base from "../../layouts/Base.astro";
   </figure>
 
   <p>
-    A conversational transfer-recommendation agent on top of the <a href="/projects/fpl-pulse/">FPL Pulse pipeline</a>. The user pastes their FPL team ID; the agent reads curated enrichment data, queries pgvector for similar players, weighs upcoming fixtures, and streams a reasoned transfer recommendation back to the browser. Interactive, multi-step, branching, loops back on itself when the first plan doesn't survive contact with the tool results.
+    A conversational transfer-recommendation agent on top of the <a href="/projects/fpl-pulse/">FPL Pulse pipeline</a>, deployed at <a href="https://fpl.isseikuzuki.co.uk/chat">fpl.isseikuzuki.co.uk/chat</a>. The user pastes their FPL team ID; the agent reads curated enrichment data, queries pgvector for similar players, weighs upcoming fixtures, and streams a reasoned transfer recommendation back to the browser. Interactive, multi-step, branching, loops back on itself when the first plan doesn't survive contact with the tool results.
   </p>
 
   <h2>The shape</h2>
@@ -61,6 +61,7 @@ import Base from "../../layouts/Base.astro";
 
   <h2>Links</h2>
   <ul class="post-list">
+    <li><a href="https://fpl.isseikuzuki.co.uk/chat">Talk to the agent</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform">Repository</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-009-scout-agent-langgraph.md">ADR-009, why LangGraph here</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-010-cloudfront-shared-secret.md">ADR-010, the CloudFront shared secret</a></li>

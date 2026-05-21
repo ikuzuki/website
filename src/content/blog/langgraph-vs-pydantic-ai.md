@@ -57,6 +57,8 @@ I want to head off the "but if your shape changes, you'll regret the choice" obj
 
 The thing that surprised me most, looking back at the two ADRs side by side, is how clean the symmetry is once the framing is right. The two systems share roughly zero implementation, but they share a decision rule. That feels right to me. Most of the framework-choice posts I read are anti-X or pro-Y. The interesting position to defend is harder: same engineer, two opposite choices, both right.
 
+The deployed version of the Scout Agent runs at [fpl.isseikuzuki.co.uk/chat](https://fpl.isseikuzuki.co.uk/chat) if you want to prod the four-node graph this post describes. Paste a team ID, ask for a transfer recommendation, watch the loop run.
+
 ---
 
 <sup>1</sup> The two-week sanity check I ran before committing to LangGraph: prototype the four-node graph as a plain asyncio while-loop, time-box at four hours, ship if it's clean. Mine wasn't. By hour three I'd reinvented `state.update` plus an iteration counter plus a half-decent conditional router plus streaming. At that point you might as well take the framework.
