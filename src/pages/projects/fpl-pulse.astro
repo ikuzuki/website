@@ -24,7 +24,7 @@ import Base from "../../layouts/Base.astro";
   </figure>
 
   <p>
-    Every gameweek the pipeline picks up raw data from the FPL API, Understat, and a handful of news sources, normalises it, and runs each of the roughly 700 players through an LLM enrichment pass (short-form summary, injury signal, sentiment, transfer narrative). The curated output lands as versioned parquet in S3 and feeds both the dashboard and the <a href="/projects/scout-agent/">Scout Agent</a>.
+    Every gameweek the pipeline picks up raw data from the FPL API, Understat, and a handful of news sources, normalises it, and runs each of the roughly 700 players through an LLM enrichment pass (short-form summary, injury signal, sentiment, transfer narrative). The curated output lands as versioned parquet in S3 and feeds both the <a href="https://fpl.isseikuzuki.co.uk/">live dashboard</a> and the <a href="/projects/scout-agent/">Scout Agent</a>.
   </p>
 
   <p>
@@ -73,6 +73,7 @@ import Base from "../../layouts/Base.astro";
 
   <h2>Links</h2>
   <ul class="post-list">
+    <li><a href="https://fpl.isseikuzuki.co.uk/">Live dashboard</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform">Repository</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform/tree/main/docs/adrs">ADRs</a></li>
     <li><a href="/projects/scout-agent/">Scout Agent, the agentic plane on top</a></li>

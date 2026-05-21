@@ -1,8 +1,8 @@
 ---
 title: The cost shape of an LLM-heavy serverless pipeline
 description: My weekly FPL enrichment pipeline costs roughly £1.50 to £3.00 a week. Most of that is the Claude API. What it taught me about cost-engineering this kind of workload.
-pubDate: 2026-05-17
-draft: true
+pubDate: 2026-04-10
+draft: false
 tags: [aws, llm, cost-engineering, lambda, serverless]
 ---
 
