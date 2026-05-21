@@ -21,4 +21,9 @@ const isActive = (p: string) =>
     class={isActive("/writing") ? "active" : ""}
     aria-current={isActive("/writing") ? "page" : undefined}>Writing</a
   >
+  <a
+    href="/about/"
+    class={isActive("/about") ? "active" : ""}
+    aria-current={isActive("/about") ? "page" : undefined}>About</a
+  >
 </nav>

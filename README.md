@@ -7,8 +7,8 @@ CloudFront, deployed via GitHub Actions with OIDC into AWS.
 
 - **Astro 5** - static site generator. Content Collections for the blog.
 - **MDX** - blog posts in markdown with optional component embedding.
-- **AWS S3 + CloudFront** - private bucket, OAC-signed, default
-  CloudFront cert until a custom domain is wired up.
+- **AWS S3 + CloudFront** - private bucket, OAC-signed, served at the
+  custom domain via an ACM cert in `us-east-1`.
 - **Terraform** - all infra in `infrastructure/`, two-stage (bootstrap
   for state and OIDC, then env for the actual site).
 - **GitHub Actions** - OIDC into AWS, runs `terraform apply` on infra
