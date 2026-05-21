@@ -27,10 +27,6 @@ import Base from "../../layouts/Base.astro";
     Every gameweek the pipeline picks up raw data from the FPL API, Understat, and a handful of news sources, normalises it, and runs each of the roughly 700 players through an LLM enrichment pass (short-form summary, injury signal, sentiment, transfer narrative). The curated output lands as versioned parquet in S3 and feeds both the <a href="https://fpl.isseikuzuki.co.uk/">live dashboard</a> and the <a href="/projects/scout-agent/">Scout Agent</a>.
   </p>
 
-  <p>
-    The goal was a production-shape build at personal scale (batch pipelines, enrichment, observability, IaC), with the freedom to redesign from the ground up with everything I've learned.
-  </p>
-
   <h2>The shape</h2>
 
   <p>

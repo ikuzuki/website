@@ -26,8 +26,8 @@ Pick any LLM workload and write down the cost matrix: rows for each model used, 
 
 | Model        | Enrichment        | Summarisation | Curation |
 |--------------|-------------------|---------------|----------|
-| Sonnet 4.5   | **£1.80 (~95%)**  | —             | £0.03    |
-| Haiku 4.5    | —                 | £0.05         | —        |
+| Sonnet 4.5   | **£1.80 (~95%)**  |               | £0.03    |
+| Haiku 4.5    |                   | £0.05         |          |
 | AWS combined | £0.01             | £0.005        | £0.005   |
 
 A corollary I had to repeat to myself a few times before I trusted it: serverless infrastructure is rounding error against LLM spend. Lambda, Step Functions, S3, CloudFront, Secrets Manager combined run me about 5p a week. The Claude API costs roughly thirty times that. Optimising Lambda memory for cost reasons on an LLM-heavy workload is the wrong instinct. Spend the memory if it makes the cold start better. The cost barely moves.

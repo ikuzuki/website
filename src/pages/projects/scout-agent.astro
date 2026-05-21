@@ -24,7 +24,7 @@ import Base from "../../layouts/Base.astro";
   </figure>
 
   <p>
-    A conversational transfer-recommendation agent on top of the <a href="/projects/fpl-pulse/">FPL Pulse pipeline</a>, deployed at <a href="https://fpl.isseikuzuki.co.uk/chat">fpl.isseikuzuki.co.uk/chat</a>. The user pastes their FPL team ID; the agent reads curated enrichment data, queries pgvector for similar players, weighs upcoming fixtures, and streams a reasoned transfer recommendation back to the browser. Interactive, multi-step, branching, loops back on itself when the first plan doesn't survive contact with the tool results.
+    A conversational transfer-recommendation agent on top of the <a href="/projects/fpl-pulse/">FPL Pulse pipeline</a>, live at <a href="https://fpl.isseikuzuki.co.uk/chat">fpl.isseikuzuki.co.uk/chat</a> since April 2026. The user pastes their FPL team ID; the agent reads curated enrichment data, queries pgvector for similar players, weighs upcoming fixtures, and streams a reasoned transfer recommendation back to the browser. Interactive, multi-step, branching, loops back on itself when the first plan doesn't survive contact with the tool results. A typical conversation costs around 10p per turn end-to-end.
   </p>
 
   <h2>The shape</h2>
@@ -56,7 +56,17 @@ import Base from "../../layouts/Base.astro";
   </p>
 
   <p>
-    Safety-wise: the agent's tools are fixed paths to Neon and S3, no user-controlled URLs, no shell, no eval. Parameters are validated through Pydantic before being assembled into the SQL or HTTP call. DynamoDB holds a per-request budget cap and rate limiter, which is cheap protection against runaway agent loops if the iteration cap fails to bind.
+    Safety-wise: the agent's tools are fixed paths to Neon and S3, no user-controlled URLs, no shell, no eval. Parameters are validated through Pydantic before being assembled into the SQL or HTTP call. DynamoDB holds a per-request £1 budget cap and per-IP rate limiter, defence in depth against the three-iteration cap failing to bind. At a typical 10p per turn the cap is theatre; the cost discipline is in the planner deciding when the loop has converged, not in the runtime stopping it.
+  </p>
+
+  <h2>What I'd do differently</h2>
+
+  <p>
+    The first iteration of the graph had a <code>fetch_user_squad</code> tool that the planner could call to load the user's current FPL team. Logically clean: the agent decides what data it needs, the tool provides it. In practice every conversation needs the squad (a transfer recommendation makes no sense without knowing what's already on the team), so every planner emitted that tool call as its first step. The "agent decides" branch was always taken. I moved squad-loading out of the tool surface and into the HTTP layer: the <code>/chat</code> endpoint resolves the squad before the graph runs, and the squad is passed in as <code>ChatRequest</code> context. The planner now starts with information it always needs, not a decision it always makes.
+  </p>
+
+  <p>
+    The rule I'd put on it: tools are for decisions, not retrieval. If the agent always fetches X, X belongs in the request context and the planner shouldn't have to think about it. If the agent sometimes fetches Y depending on what it's seen, Y belongs on the tool surface. The mistake on the first pass was treating "the agent should be able to" as the same question as "the agent should decide whether to".
   </p>
 
   <h2>Links</h2>

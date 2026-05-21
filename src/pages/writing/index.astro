@@ -24,6 +24,9 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
               })}
             </time>
             <a href={`/writing/${p.slug}/`}>{p.data.title}</a>
+            {p.data.description && (
+              <p class="muted">{p.data.description}</p>
+            )}
           </li>
         ))}
       </ul>
