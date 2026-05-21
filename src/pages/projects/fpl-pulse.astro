@@ -71,6 +71,12 @@ import Base from "../../layouts/Base.astro";
     Secrets Manager was the other. I defaulted to it as the AWS-recommended pattern, only spotting the £1.20 monthly line item a few weeks in when I opened AWS Cost Explorer and noticed the bill was mostly secrets I wasn't rotating. Migration to SSM Parameter Store was an afternoon. The full reasoning is in <a href="/writing/cost-engineering-llm-pipeline/">the cost-engineering writeup</a>; the regret isn't the £1.20 but the months I'd been paying for rotation I never used.
   </p>
 
+  <h2>How I'd productionise</h2>
+
+  <p>
+    The pipeline fails occasionally on collection because Cloudflare blocks the AWS IP ranges that Lambda exits from. The <code>curl_cffi</code> impersonation gets past the TLS-fingerprinting layer; it doesn't help with the IP-level block, which fires intermittently and takes out a run. The production fix is a residential-IP proxy service (BrightData and similar) or a VPC with a NAT routed through residential IPs. Both are persistent monthly costs in the tens of pounds, which doesn't make sense for a personal pipeline that costs £2/week to run. So I live with the failure-and-retry: a failed run triggers a CloudWatch alarm, I rerun the Step Function manually, the extra invocation cost is rounding error. If the project ever needed to serve anyone else, the residential-proxy line item would be the first thing I'd add.
+  </p>
+
   <h2>Links</h2>
   <ul class="post-list">
     <li><a href="https://fpl.isseikuzuki.co.uk/">Live dashboard</a></li>
