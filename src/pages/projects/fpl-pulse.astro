@@ -64,7 +64,11 @@ import Base from "../../layouts/Base.astro";
   <h2>What I'd do differently</h2>
 
   <p>
-    The four-stage Hive partitioning was over-engineered for the actual data volumes. A single curated layer with deeper schema validation would have paid for itself faster. The first Step Function definition also used <code>Retry</code> blocks that overlapped with the Lambda's own retry logic, multiplying the effective retry count; aligning retries explicitly at the Step Function layer would have saved an afternoon. Neither rises to the level of "rewrite", but on the next pipeline of this shape I'd start there.
+    Observability was the regret. The first runs of the pipeline produced no Langfuse traces because the Lambdas finished before the SDK's background shipper thread had time to send anything; I hadn't added the explicit <code>langfuse.flush()</code> before return. Quick fix once spotted. The cost of catching observability late is that the earliest runs are opaque, which on a weekly-cadence pipeline is a month before the picture sharpens. On the next pipeline I'd wire observability deliberately on day one rather than trusting an SDK to "handle it for you" on a serverless runtime that can pause and resume between invocations.
+  </p>
+
+  <p>
+    Secrets Manager was the other. I defaulted to it as the AWS-recommended pattern, only spotting the £1.20 monthly line item a few weeks in when I opened AWS Cost Explorer and noticed the bill was mostly secrets I wasn't rotating. Migration to SSM Parameter Store was an afternoon. The full reasoning is in <a href="/writing/cost-engineering-llm-pipeline/">the cost-engineering writeup</a>; the regret isn't the £1.20 but the months I'd been paying for rotation I never used.
   </p>
 
   <h2>Links</h2>
