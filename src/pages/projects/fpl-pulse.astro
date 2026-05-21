@@ -34,7 +34,7 @@ import Base from "../../layouts/Base.astro";
   </p>
 
   <p>
-    Eleven ADRs in <code>docs/adrs/</code> capture the decisions that actually changed the shape: model selection, Step Function retry alignment, the curate-versus-on-read tradeoff, the OAC POST landmine on the agent side. The full build log lives in the vault.
+    Eleven ADRs in <code>docs/adr/</code> capture the decisions that actually changed the shape: direct API over LangChain (ADR-0003), LLM cost optimisation (ADR-0004), the parallel pipeline design (ADR-0006), Neon pgvector for agent retrieval (ADR-0008), agent transport on a Function URL (ADR-0010), SSM Parameter Store over Secrets Manager (ADR-0011). The full build log lives in the vault.
   </p>
 
   <h2>Decisions worth pulling out</h2>
@@ -72,7 +72,7 @@ import Base from "../../layouts/Base.astro";
     <li><a href="https://fpl.isseikuzuki.co.uk/">Live dashboard</a></li>
     <li><a href="https://fpl.isseikuzuki.co.uk/chat">Talk to the agent</a></li>
     <li><a href="https://github.com/ikuzuki/fpl-platform">Repository</a></li>
-    <li><a href="https://github.com/ikuzuki/fpl-platform/tree/main/docs/adrs">ADRs</a></li>
+    <li><a href="https://github.com/ikuzuki/fpl-platform/tree/main/docs/adr">ADRs</a></li>
     <li><a href="/projects/scout-agent/">Scout Agent, the agentic plane on top</a></li>
     <li><a href="/writing/cost-engineering-llm-pipeline/">The cost-engineering writeup</a></li>
   </ul>

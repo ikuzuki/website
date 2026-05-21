@@ -64,7 +64,7 @@ That's the entirety of the fix. It's less principled than OAC plus AWS_IAM. Ther
 
 A few cache-behaviour details that I'd be more annoyed at myself for missing if I'd missed them: forward `Cache-Control: no-cache` and don't cache responses on the SSE path, because CloudFront cheerfully tries to cache the stream and either fails or, worse, serves cached partial streams to other users. The AWS-managed `CachingDisabled` policy is the right pick. Use `AllViewerExceptHostHeader` for the origin request policy, because the Function URL rejects requests whose `Host` doesn't match its own domain, so forwarding the dashboard's host header would 403 every request before it even reached the middleware. Allowed methods on the behaviour need to include POST explicitly, because the default doesn't, and a missing POST entry silently 405s the agent. None of these were the bug. All of them were potholes I drove around in the dark.
 
-The story ends here. The agent streams, the dashboard works, the ADR went into the FPL repo as [ADR-010](https://github.com/ikuzuki/fpl-platform/blob/main/docs/adrs/adr-010-cloudfront-shared-secret.md). The thing I want future-me to remember, on the assumption that future-me is in a different AWS rabbit hole at the time, is to look for the edge of the example rather than the centre.
+The story ends here. The agent streams, the dashboard works, the decision went into the FPL repo as [ADR-0010](https://github.com/ikuzuki/fpl-platform/blob/main/docs/adr/0010-agent-http-transport-lambda-function-url.md). The thing I want future-me to remember, on the assumption that future-me is in a different AWS rabbit hole at the time, is to look for the edge of the example rather than the centre.
 
 ---
 
