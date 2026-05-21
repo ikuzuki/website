@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-21T00:00:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Picking an agent framework" id="picking-agent-framework">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title and subtitle -->
+        <mxCell id="title" value="Picking an agent framework &#xb7; shape, not capability" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="30" width="1440" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="One decision rule covers the four shapes that show up in practice" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=2;fontColor=#6B6358;" vertex="1" parent="1">
+          <mxGeometry x="80" y="75" width="1440" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Root question -->
+        <mxCell id="root" value="What is the shape of the orchestration?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="1">
+          <mxGeometry x="600" y="140" width="400" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Branch 1: Parallel fan-out -->
+        <mxCell id="branch1" value="Parallel fan-out&#xa;with deterministic joins" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2;fontSize=12;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf1" value="Pydantic AI + asyncio.TaskGroup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#2E7D32;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#1B5E20;verticalAlign=top;spacingTop=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf1-body" value="Ten lines of TaskGroup.&#xa;&#xa;Typed outputs flow through&#xa;the rest of the codebase.&#xa;&#xa;Request-scoped agents, gone&#xa;in seconds. Nothing to persist." style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="leaf1">
+          <mxGeometry x="15" y="45" width="290" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Branch 2: Stateful conditional loop -->
+        <mxCell id="branch2" value="Stateful loop with&#xa;branching and iteration cap" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=12;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="1">
+          <mxGeometry x="440" y="320" width="320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf2" value="LangGraph" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#5B21B6;verticalAlign=top;spacingTop=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="420" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf2-body" value="Graph DSL gives you&#xa;conditional routing,&#xa;state-shape validation,&#xa;iteration caps, streaming,&#xa;and per-node tracing,&#xa;already built." style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="leaf2">
+          <mxGeometry x="15" y="45" width="290" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Branch 3: Sequential pipeline -->
+        <mxCell id="branch3" value="Sequential pipeline,&#xa;no branching" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B6358;strokeWidth=2;fontSize=12;fontStyle=1;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="800" y="320" width="320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf3" value="Pick on context" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#6B6358;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#1A1A1A;verticalAlign=top;spacingTop=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="800" y="420" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf3-body" value="Both frameworks fit.&#xa;&#xa;Pick on imports already&#xa;in the project, team&#xa;familiarity, latency profile.&#xa;&#xa;Move on." style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="leaf3">
+          <mxGeometry x="15" y="45" width="290" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Branch 4: Human-in-the-loop / durable -->
+        <mxCell id="branch4" value="Human-in-the-loop or&#xa;durable long-running workflow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontSize=12;fontStyle=1;fontColor=#A04A00;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="320" width="320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf4" value="LangGraph + checkpointing,&#xa;or Temporal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7EC;strokeColor=#ED7100;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#A04A00;verticalAlign=top;spacingTop=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="420" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="leaf4-body" value="Needs to resume from disk&#xa;between turns or restarts.&#xa;&#xa;Anything in-memory will lose&#xa;state on the first redeploy.&#xa;&#xa;Pick on operational fit." style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="leaf4">
+          <mxGeometry x="15" y="45" width="290" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Edges from root to branches -->
+        <mxCell id="e-root-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#7A5A1A;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="root" target="branch1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-root-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#7A5A1A;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="root" target="branch2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-root-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#7A5A1A;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="root" target="branch3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-root-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#7A5A1A;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="root" target="branch4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edges from each branch down to its leaf -->
+        <mxCell id="e-b1-l1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2E7D32;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="branch1" target="leaf1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-b2-l2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="branch2" target="leaf2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-b3-l3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#6B6358;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="branch3" target="leaf3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-b4-l4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#ED7100;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="branch4" target="leaf4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cross-pollination annotation: same engineer, opposite call -->
+        <mxCell id="callout" value="Same engineer, opposite call on this tree, six weeks apart.&#xa;Both branches were right for the shape they had to fit." style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontStyle=2;fontColor=#5B21B6;" vertex="1" parent="1">
+          <mxGeometry x="80" y="680" width="1440" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Metrics strip -->
+        <mxCell id="metrics-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F4F4;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="1440" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="metrics" value="Use-case shape picks the framework &#xb7; capability-count is the wrong axis to compare them on" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="1440" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

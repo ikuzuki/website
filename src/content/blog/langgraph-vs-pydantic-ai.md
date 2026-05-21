@@ -6,11 +6,11 @@ draft: true
 tags: [llm, agents, langgraph, pydantic-ai, architecture]
 ---
 
-In March I wrote an ADR rejecting LangGraph for an orchestration layer at work. We went with Pydantic AI on top of a custom asyncio graph instead. In May I wrote a second ADR, on a personal project, choosing LangGraph. Same engineer, opposite call, six weeks apart.
+In March I wrote an ADR rejecting LangGraph for an agent orchestration layer on another project I worked on. We went with Pydantic AI on top of a custom asyncio graph instead. In May I wrote a second ADR, on a personal project, choosing LangGraph. Same engineer, opposite call, six weeks apart.
 
 I don't think it's a contradiction, or a change of mind, or framework fashion. The two systems are different shapes of problem, and the durable thing to take from either decision is the framing: use-case shape, not capability count, picks the framework.
 
-The first system, at work, is request-scoped. A user asks the system to do a thing; under the hood, a constellation of small agents fan out, do their work in parallel, and the results get assembled into a response. Latency budget is single-digit seconds. Each agent has a narrow job (extract this field, classify that intent, summarise this passage). They don't talk to each other, they don't loop, they each produce one structured output and return. The orchestration is parallel-fan-out with deterministic joins.
+The first system, on the other project, is request-scoped. A user asks the system to do a thing; under the hood, a constellation of small agents fan out, do their work in parallel, and the results get assembled into a response. Latency budget is single-digit seconds. Each agent has a narrow job (extract this field, classify that intent, summarise this passage). They don't talk to each other, they don't loop, they each produce one structured output and return. The orchestration is parallel-fan-out with deterministic joins.
 
 The second system, the [Scout Agent](/projects/scout-agent/) on top of my FPL pipeline, is conversational. A user asks for transfer recommendations on their team. The agent forms a plan, executes some tools (pgvector search, fixture lookup, player history), looks at the results, decides whether the plan still makes sense, possibly amends it, and eventually produces a recommendation. Latency budget is tens of seconds. The user is sitting there watching a streaming response come back. The orchestration is a conditional loop over shared state.
 
@@ -22,9 +22,9 @@ Pydantic AI is closer to "type-safe agent primitives". An `Agent[DepsT, OutputT]
 
 Both frameworks can be made to do either shape. I want to be clear about that, because every framework comparison post on the internet has a "but you could just use X to do Y" objection. Yes, you could. The question I find more useful is what each framework was built for, what shape of problem it makes simple, and what shape it makes possible but awkward. Capability-counting (which framework supports more features?) is a different question and, in my view, the less helpful one for picking between two well-designed tools.
 
-For the work problem, Pydantic AI plus a custom asyncio graph wins.
+For that orchestration problem, Pydantic AI plus a custom asyncio graph wins.
 
-A single user request fires off, say, five parallel agents: one extracting structured fields from a document, one classifying intent, one running entity linkage, one ranking candidates, one generating a short summary. They don't depend on each other, their outputs go into a deterministic merge step. Latency is dominated by the slowest agent (a couple of seconds), not by orchestration overhead. The asyncio version is short and obvious:
+A single user request fires off, say, five parallel agents, each with a narrow job: extracting structured fields, classifying intent, applying topic tags, checking content quality, generating a short summary. They don't depend on each other, their outputs go into a deterministic merge step. Latency is dominated by the slowest agent (a couple of seconds), not by orchestration overhead. The asyncio version is short and obvious:
 
 ```python
 async with asyncio.TaskGroup() as tg:
@@ -36,7 +36,7 @@ final = merge(field_task.result(), intent_task.result(), ...)
 
 Ten lines. The LangGraph version would be a graph with a START node, five parallel branches to a JOIN node, then a final node. Same logical structure, more ceremony, plus a graph DSL to learn and debug. LangGraph's durable execution (the thing that justifies the abstraction cost) buys nothing on this workload because the request is gone in three seconds. There's nothing to durably persist.
 
-A second reason worth noting: every agent in the system already has Pydantic models flowing through the FastAPI layer at the API boundary. Pydantic AI's `OutputT` is the same type. Type-safety end-to-end, no model duplication between API boundary and agent code, no marshalling step in the middle. It's the same kind of small fit advantage as choosing your ORM to match your serialiser; not load-bearing on its own, but real when the alternative would force a parallel type hierarchy.
+A second reason worth noting: every agent in the system already had structured Pydantic outputs flowing through the rest of the codebase. Pydantic AI's `OutputT` slots into the same type hierarchy. Type-safety end-to-end, no model duplication between layers, no marshalling step in the middle. It's the same kind of small fit advantage as choosing your ORM to match your serialiser; not load-bearing on its own, but real when the alternative would force a parallel type hierarchy.
 
 The ADR for that one is in Confluence; the relevant sentence is "LangGraph is not worse than asyncio; it is built for a different shape of problem". Worth landing that flatly. The Pydantic AI ADR is not a critique of LangGraph.
 
@@ -48,7 +48,7 @@ You could write that in asyncio. It's a while loop with a state dict and some fu
 
 The diagnostic I find myself reaching for when other people ask me about this is roughly: describe your problem in one sentence, focused on the shape of orchestration. If it's parallel-fan-out with deterministic joins, asyncio plus typed agent primitives is enough. If it's a stateful conditional loop with branching and iteration caps, reach for something that pre-builds those primitives so you're not re-implementing them under deadline pressure. If two frameworks both fit cleanly, pick on local context (already-installed dependencies, team familiarity, latency profile). If one of them is awkward for your shape, that awkwardness is the signal.
 
-I want to head off the "but if your shape changes, you'll regret the choice" objection. Real answer: yes, you will, and that's fine. Frameworks aren't forever. When the work system starts needing durable execution for long-running workflows (it will, probably within a year), we'll port the relevant agents to LangGraph or Temporal and accept the migration cost. The system was right for the shape it had at the time of building. The same is true on the FPL side. If the Scout Agent ever needs to handle parallel users, fanning their requests out across nodes that don't share state, the LangGraph shape will start to feel heavy and I'll port the affected nodes back to plain asyncio. Both decisions are revisable; both will be revised; that's not the same as either being wrong.
+I want to head off the "but if your shape changes, you'll regret the choice" objection. Real answer: yes, you will, and that's fine. Frameworks aren't forever. When that system starts needing durable execution for long-running workflows (it will, probably within a year), the relevant agents will get ported to LangGraph or Temporal and the migration cost paid. The system was right for the shape it had at the time of building. The same is true on the FPL side. If the Scout Agent ever needs to handle parallel users, fanning their requests out across nodes that don't share state, the LangGraph shape will start to feel heavy and I'll port the affected nodes back to plain asyncio. Both decisions are revisable; both will be revised; that's not the same as either being wrong.
 
 The thing that surprised me most, looking back at the two ADRs side by side, is how clean the symmetry is once the framing is right. The two systems share roughly zero implementation, but they share a decision rule. That feels right to me. Most of the framework-choice posts I read are anti-X or pro-Y. The interesting position to defend is harder: same engineer, two opposite choices, both right.
 

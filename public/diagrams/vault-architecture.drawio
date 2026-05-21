@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-21T00:00:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Personal plugin and vault" id="plugin-vault">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title and subtitle -->
+        <mxCell id="title" value="Personal plugin &#xb7; skills for vault, voice, and meetings" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="30" width="1440" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Loaded into every Claude Code session &#xb7; reads a local markdown vault backed up to a private GitHub repo" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=0;fontColor=#6B6358;" vertex="1" parent="1">
+          <mxGeometry x="80" y="75" width="1440" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Personal plugin (central, large container) -->
+        <mxCell id="plugin" value="Personal plugin" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fillColor=#FFF7EC;strokeColor=#ED7100;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#A04A00;align=left;spacingLeft=18;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="340" y="120" width="940" height="460" as="geometry" />
+        </mxCell>
+
+        <!-- LEFT cluster: Voice and utility skills -->
+        <mxCell id="other-skills" value="Voice and utility skills" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;fontSize=13;fontStyle=1;fontColor=#A04A00;align=left;verticalAlign=top;spacingTop=10;spacingLeft=14;container=1;collapsible=0;" vertex="1" parent="plugin">
+          <mxGeometry x="30" y="50" width="430" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-async" value="Draft async messages&#xa;PRs, Jira, Slack, email" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;fontColor=#4B2A6B;" vertex="1" parent="other-skills">
+          <mxGeometry x="20" y="55" width="390" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-longform" value="Draft long-form writing&#xa;blog posts, ADRs, LinkedIn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;fontColor=#4B2A6B;" vertex="1" parent="other-skills">
+          <mxGeometry x="20" y="150" width="390" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-meeting" value="Draft meeting agendas&#xa;1:1s, retros, all-hands prep" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;fontColor=#4B2A6B;" vertex="1" parent="other-skills">
+          <mxGeometry x="20" y="245" width="390" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="os-note" value="short-form drafting and meeting scaffolds" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#A04A00;" vertex="1" parent="other-skills">
+          <mxGeometry x="20" y="340" width="390" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- RIGHT cluster: Vault skills -->
+        <mxCell id="vault-skills" value="Vault skills" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;fontSize=13;fontStyle=1;fontColor=#A04A00;align=left;verticalAlign=top;spacingTop=10;spacingLeft=14;container=1;collapsible=0;" vertex="1" parent="plugin">
+          <mxGeometry x="480" y="50" width="430" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-search" value="Search the vault" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="vault-skills">
+          <mxGeometry x="20" y="55" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-lint" value="Lint structure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="vault-skills">
+          <mxGeometry x="225" y="55" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-research" value="Research across vault" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="vault-skills">
+          <mxGeometry x="20" y="135" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-review" value="Periodic review" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="vault-skills">
+          <mxGeometry x="225" y="135" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-challenge" value="Challenge a position" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="vault-skills">
+          <mxGeometry x="20" y="215" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="sk-distil" value="Distil new notes&#xa;(writer + neighbour refresh)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEAF3;strokeColor=#B85450;strokeWidth=3;fontSize=12;fontStyle=1;fontColor=#A60E5C;" vertex="1" parent="vault-skills">
+          <mxGeometry x="225" y="215" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="vs-note" value="five readers, one writer (distil)" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#A04A00;" vertex="1" parent="vault-skills">
+          <mxGeometry x="20" y="295" width="390" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Claude Code session (left of plugin) -->
+        <mxCell id="claude-code" value="Claude Code sessions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#5B21B6;verticalAlign=top;spacingTop=14;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="260" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="cc-body" value="Any session in any repo&#xa;loads the plugin automatically.&#xa;&#xa;Skills fire on intent match.&#xa;&#xa;Plugin lives at&#xa;~/.claude/plugins" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="claude-code">
+          <mxGeometry x="15" y="45" width="230" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Local vault (right of plugin) -->
+        <mxCell id="vault" value="Local vault" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEAF3;strokeColor=#B85450;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#A60E5C;verticalAlign=top;spacingTop=14;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="160" width="240" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="v-body" value="~/Knowledge Base/&#xa;knowledge-vault/&#xa;&#xa;216 markdown files&#xa;plain text, no index" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontFamily=ui-monospace, SF Mono, Menlo, monospace;fontColor=#1A1A1A;" vertex="1" parent="vault">
+          <mxGeometry x="15" y="45" width="210" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Private GitHub repo (below vault) -->
+        <mxCell id="github" value="Private GitHub repo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#374151;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#111827;verticalAlign=top;spacingTop=14;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="400" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="gh-body" value="Off-machine backup.&#xa;&#xa;Not the source of truth;&#xa;the local copy is." style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="github">
+          <mxGeometry x="15" y="45" width="210" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Inbox (below the plugin, feeds distil-vault) -->
+        <mxCell id="inbox" value="inbox/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#6B6358;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#1A1A1A;verticalAlign=top;spacingTop=14;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="940" y="640" width="400" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ib-body" value="Cowork transcripts &#xb7; freewrites &#xb7; Claude Code session dumps &#xb7; harvest pipeline outputs" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="inbox">
+          <mxGeometry x="15" y="40" width="370" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <!-- Claude Code -> Plugin: loaded into -->
+        <mxCell id="e-cc-plugin" value="loaded into" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;fontStyle=2;fontColor=#5B21B6;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="claude-code" target="plugin">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Vault-skills cluster -> Local vault: read/write -->
+        <mxCell id="e-vskills-vault" value="Read / Grep / Glob&#xa;(+ distil writes)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;startArrow=classic;strokeColor=#B85450;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;fontStyle=2;fontColor=#A60E5C;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="vault-skills" target="vault">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Local vault <-> GitHub: git push/pull -->
+        <mxCell id="e-vault-gh" value="git push / pull" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;startArrow=classic;strokeColor=#374151;strokeWidth=2;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=11;fontStyle=2;fontColor=#374151;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="vault" target="github">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Inbox -> distil skill (cross-container, parent=1) -->
+        <mxCell id="e-inbox-distil" value="raw notes for distillation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#6B6358;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=11;fontStyle=2;fontColor=#6B6358;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="inbox" target="sk-distil">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Metrics strip -->
+        <mxCell id="metrics-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F4F4;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="1440" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="metrics" value="9 skills &#xb7; 216 vault files &#xb7; plain markdown, no index, no daemon &#xb7; synthesis happens at write time" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="1440" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

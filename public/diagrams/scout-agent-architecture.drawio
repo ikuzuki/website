@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-20T00:00:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Scout Agent" id="scout-agent">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title and subtitle -->
+        <mxCell id="title" value="Scout Agent &#xb7; Conversational transfer recommendations" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="30" width="1440" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Four-node LangGraph state machine over Neon pgvector" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=0;fontColor=#6B6358;" vertex="1" parent="1">
+          <mxGeometry x="80" y="75" width="1440" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Main runtime container (the LangGraph state machine) -->
+        <mxCell id="runtime" value="Lambda Function URL &#xb7; auth_type=NONE &#xb7; FastAPI &#xb7; LangGraph" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fillColor=#F3E8FF;strokeColor=#8C4FFF;fontSize=13;fontStyle=1;fontColor=#5B21B6;align=left;spacingLeft=18;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="1440" height="280" as="geometry" />
+        </mxCell>
+
+        <!-- User query input (inside runtime container, far left) -->
+        <mxCell id="user-query" value="User query&#xa;(team ID + ask)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#6B6358;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="runtime">
+          <mxGeometry x="30" y="125" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Spine: planner -->
+        <mxCell id="planner" value="planner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="runtime">
+          <mxGeometry x="210" y="125" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Spine: tool_executor -->
+        <mxCell id="tool-executor" value="tool_executor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="runtime">
+          <mxGeometry x="390" y="125" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Spine: reflector -->
+        <mxCell id="reflector" value="reflector" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="runtime">
+          <mxGeometry x="580" y="125" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Spine: recommender -->
+        <mxCell id="recommender" value="recommender" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="runtime">
+          <mxGeometry x="760" y="125" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Output: SSE -->
+        <mxCell id="sse-out" value="Streaming SSE&#xa;response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#6B6358;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="runtime">
+          <mxGeometry x="950" y="125" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Note on host -->
+        <mxCell id="host-note" value="Behind CloudFront with shared-secret header&#xa;(see ADR-010)" style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#5B21B6;" vertex="1" parent="runtime">
+          <mxGeometry x="1130" y="125" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Spine edges (parented to runtime since both endpoints sit inside it) -->
+        <mxCell id="e-query-planner" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="runtime" source="user-query" target="planner">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-planner-tools" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="runtime" source="planner" target="tool-executor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-tools-reflector" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="runtime" source="tool-executor" target="reflector">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-reflector-recommender" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="runtime" source="reflector" target="recommender">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-recommender-sse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="runtime" source="recommender" target="sse-out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Conditional back-edge: reflector -> planner, labelled "loop, max 3" -->
+        <mxCell id="e-loop" value="loop, max 3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#8C4FFF;strokeWidth=2;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=11;fontStyle=2;fontColor=#5B21B6;labelBackgroundColor=#F3E8FF;" edge="1" parent="runtime" source="reflector" target="planner">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="80" />
+              <mxPoint x="280" y="80" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Tools group (below the runtime) -->
+        <mxCell id="tools-group" value="Tools &#xb7; pgvector + curated S3 + parametrised SQL" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#FFF7EC;strokeColor=#ED7100;fontSize=13;fontStyle=1;fontColor=#A04A00;align=left;spacingLeft=18;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="380" y="480" width="840" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tool-pgvector" value="search_similar_players&#xa;pgvector + MiniLM 384-dim" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontSize=12;fontColor=#A04A00;" vertex="1" parent="tools-group">
+          <mxGeometry x="30" y="55" width="370" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="tool-history" value="get_player_history&#xa;curated S3 read" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontSize=12;fontColor=#A04A00;" vertex="1" parent="tools-group">
+          <mxGeometry x="430" y="55" width="370" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="tool-fixtures" value="get_fixtures&#xa;FPL API cached" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontSize=12;fontColor=#A04A00;" vertex="1" parent="tools-group">
+          <mxGeometry x="30" y="145" width="370" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="tool-compare" value="compare_players&#xa;parametrised SQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontSize=12;fontColor=#A04A00;" vertex="1" parent="tools-group">
+          <mxGeometry x="430" y="145" width="370" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Edge from tool_executor down into the tools group (cross-container, parent="1") -->
+        <mxCell id="e-exec-tools" value="dispatches" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;startArrow=classic;strokeColor=#ED7100;strokeWidth=2;fontSize=11;fontStyle=2;fontColor=#A04A00;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="tool-executor" target="tools-group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Metrics strip at the bottom -->
+        <mxCell id="metrics-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F4F4;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="1440" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="metrics" value="LangGraph state machine &#xb7; Neon pgvector retrieval &#xb7; MiniLM 384-dim embeddings &#xb7; max 3 loop iterations &#xb7; streams over SSE" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="780" width="1440" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
