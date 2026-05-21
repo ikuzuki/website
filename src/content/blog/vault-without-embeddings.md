@@ -8,19 +8,24 @@ tags: [llm, rag, personal-knowledge, claude-code]
 
 In May I ran `rm -rf` on about six hundred lines of code that worked. The retrieval pipeline I'd spent April building, with SQLite FTS5 for lexical search, LanceDB for vectors, an Ollama embedder, a file watcher, and a hybrid scorer that re-ranked the two together. Two months of evenings, gone in one command. The vault it served, my personal knowledge base of about 216 markdown files, now gets read by Claude directly, with no index in front of it.
 
-This is the post-mortem on that decision, partly because friends keep asking why, and partly because I think the lesson is more general than I first thought.
+This is the post-mortem on that decision, partly because friends keep asking why, and partly because I think there's something here that generalises beyond a personal vault.
 
 The thing I'd built was, in 2026 terms, unremarkable. A FastMCP server exposing `search` and `read` tools to Claude Code over the Model Context Protocol. SQLite FTS5 for full-text search, refreshed by a `watchdog` file watcher on every change to the vault. LanceDB for vectors, with `nomic-embed-text:v1.5` running locally through Ollama at 768 dimensions. A custom scorer that combined FTS rank and vector cosine similarity, weighted and re-ranked. A sidecar of frontmatter for structured filters, so I could search "by tag" or "by created date range" or "by folder". It worked. Claude would call `search`, get the top-k chunks back, use them. Quality was decent.
 
-Around early May three things landed at the same time and changed my mind on the whole approach.
+By early May I'd changed my mind on the whole approach.
 
 I'd written a calibration set, about thirty queries against the vault with hand-graded "good answer" outputs. Mostly to tune the FTS-vs-vector blend in the hybrid scorer. On a whim I ran the same calibration set through a different setup: no MCP, no search tool, just Claude calling `Glob` and `Grep` and `Read` against the vault directly. I expected the difference to be obvious. It wasn't. Three to five percent better on the hybrid scorer, on a generous quality metric I'd defined myself. Not nothing, but not 600 lines of plumbing and a daemon dependency. I sat with that for a couple of days, ran it on a fresh calibration set in case I'd accidentally overfit the first one, got the same answer. The retrieval problem the MCP was solving wasn't really a problem at this corpus size.
 
 In the same week three real bugs surfaced in the indexing path. The Windows file watcher missed MCP-authored files. When the MCP wrote a new note through its own tool, the watcher didn't fire, because Python's `os.replace` on Windows doesn't reliably trigger `on_modified` on the renamed target<sup>1</sup>. I'd write a note via Claude, ask Claude to find it, and it wouldn't be in the index until I touched the file manually. The FTS and vector writes weren't atomic. I caught a roughly 20% retrieval gap once where the FTS index had ingested a batch but the LanceDB writer had crashed quietly, leaving the two indexes out of sync. And the chunk tokenizer in my retrieval code didn't match the tokenizer that the embedder used, so the vector index was scoring against slightly-different chunks than I was searching against. Each bug was findable. Together, they were a maintenance load on a system that was meant to make my life easier.
 
-The third thing was a Karpathy note on his LLM wiki: plain markdown files, no vector store, the model "compiles" answers by reading files directly. He was at about a hundred articles. I was at about two hundred and growing slowly. The architecture matched: markdown, frontmatter, no daemon, no index.
+The third thing was a [Karpathy note on his LLM wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): plain markdown files, no vector store, the model "compiles" answers by reading files directly. He was at about a hundred articles. I was at about two hundred and growing slowly. The architecture matched: markdown, frontmatter, no daemon, no index.
 
 I deleted the MCP server, the FTS5 layer, the LanceDB layer, the Ollama dependency, the file watcher, the 600 lines around them. Took maybe ninety minutes including the commit message.
+
+<figure>
+  <img src="/diagrams/vault-before-after.svg" alt="Two side-by-side panels comparing the vault retrieval architecture. Left panel labelled 'Before · MCP retrieval pipeline' contains six stacked components: FastMCP server, hybrid scorer, SQLite FTS5 and LanceDB side by side, Ollama nomic-embed-text v1.5, and watchdog file watcher; the panel is stamped 'DELETED'. Right panel labelled 'After · three skills, native tools' contains four components: Claude Code with Read, Grep, and Glob at the top, then three skill boxes: search-vault, distil-vault, and lint-vault. Both panels point down to a shared vault box containing 216 markdown files." />
+  <figcaption>Same vault, before and after. Mass drops on the right.</figcaption>
+</figure>
 
 What replaced it isn't a like-for-like swap. The MCP only handled retrieval. Three skills in my personal Claude Code plugin do what the MCP did, plus the synthesis work I'd never had a clean home for.
 

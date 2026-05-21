@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-05-21T00:00:00.000Z" agent="Claude" version="24.0.0">
+  <diagram name="Vault before and after" id="vault-before-after">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="I deleted my embedding pipeline" style="text;html=1;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="30" width="1440" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Same vault, two retrieval architectures &#xb7; visible mass drop on the right" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=2;fontColor=#6B6358;" vertex="1" parent="1">
+          <mxGeometry x="80" y="75" width="1440" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- LEFT PANEL: BEFORE -->
+        <mxCell id="panel-left" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#6B6358;strokeWidth=2;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="130" width="690" height="540" as="geometry" />
+        </mxCell>
+
+        <mxCell id="left-header" value="Before &#xb7; MCP retrieval pipeline" style="text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="panel-left">
+          <mxGeometry x="20" y="10" width="650" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="left-subhead" value="~600 lines of code, two months of evenings, ninety minutes to delete" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#6B6358;" vertex="1" parent="panel-left">
+          <mxGeometry x="20" y="42" width="650" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b-mcp" value="FastMCP server &#xb7; search() + read() over MCP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEAF3;strokeColor=#E7157B;strokeWidth=2;fontSize=12;fontStyle=1;fontColor=#1A1A1A;" vertex="1" parent="panel-left">
+          <mxGeometry x="60" y="80" width="570" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b-scorer" value="Hybrid scorer &#xb7; FTS rank + cosine, weighted and re-ranked" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B6358;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-left">
+          <mxGeometry x="60" y="150" width="570" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b-fts" value="SQLite FTS5" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B6358;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-left">
+          <mxGeometry x="60" y="220" width="275" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b-lance" value="LanceDB &#xb7; vectors" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B6358;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-left">
+          <mxGeometry x="355" y="220" width="275" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b-ollama" value="Ollama &#xb7; nomic-embed-text:v1.5 (768-dim local embedder)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B6358;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-left">
+          <mxGeometry x="60" y="290" width="570" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b-watcher" value="watchdog &#xb7; file watcher (missed atomic renames on Windows)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B6358;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-left">
+          <mxGeometry x="60" y="360" width="570" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="b-note" value="Six components, three real bugs, 3 to 5 percent retrieval lift on a generous metric" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#6B6358;" vertex="1" parent="panel-left">
+          <mxGeometry x="20" y="440" width="650" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="b-deleted" value="DELETED" style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#E7157B;" vertex="1" parent="panel-left">
+          <mxGeometry x="20" y="475" width="650" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- RIGHT PANEL: AFTER -->
+        <mxCell id="panel-right" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="130" width="690" height="540" as="geometry" />
+        </mxCell>
+
+        <mxCell id="right-header" value="After &#xb7; three skills, native tools" style="text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="panel-right">
+          <mxGeometry x="20" y="10" width="650" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="right-subhead" value="Claude does retrieval natively; skills handle write-time synthesis" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#6B6358;" vertex="1" parent="panel-right">
+          <mxGeometry x="20" y="42" width="650" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a-claude" value="Claude Code &#xb7; Read + Grep + Glob" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#2E7D32;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="panel-right">
+          <mxGeometry x="60" y="100" width="570" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="a-search" value="search-vault skill &#xb7; Glob + Grep + Read pipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-right">
+          <mxGeometry x="60" y="220" width="570" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a-distil" value="distil-vault skill &#xb7; new note + update 5 to 15 neighbours" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-right">
+          <mxGeometry x="60" y="310" width="570" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a-lint" value="lint-vault skill &#xb7; whole-vault consistency checks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=1;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="panel-right">
+          <mxGeometry x="60" y="400" width="570" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a-note" value="No daemon, no index, no embedding step &#xb7; latency well under a second" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontColor=#1B5E20;" vertex="1" parent="panel-right">
+          <mxGeometry x="20" y="485" width="650" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Shared vault -->
+        <mxCell id="vault" value="Vault &#xb7; ~216 markdown files with frontmatter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#7A5A1A;" vertex="1" parent="1">
+          <mxGeometry x="500" y="710" width="600" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e-left-vault" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#6B6358;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="panel-left" target="vault">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-right-vault" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2E7D32;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="panel-right" target="vault">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Footer strip -->
+        <mxCell id="footer-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F4F4;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="80" y="800" width="1440" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="Retrieval quality difference: 3 to 5 percent on a generous metric &#xb7; synthesis moves from query-time to write-time" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontColor=#232F3E;" vertex="1" parent="1">
+          <mxGeometry x="80" y="800" width="1440" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

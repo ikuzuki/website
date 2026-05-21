@@ -8,7 +8,7 @@ tags: [llm, agents, langgraph, pydantic-ai, architecture]
 
 In March I wrote an ADR rejecting LangGraph for an agent orchestration layer on another project I worked on. We went with Pydantic AI on top of a custom asyncio graph instead. Six weeks later, on a personal project, I picked LangGraph for the agent layer. Same engineer, opposite call.
 
-I don't think it's a contradiction, or a change of mind, or framework fashion. The two systems are different shapes of problem, and the durable thing to take from either decision is the framing: use-case shape, not capability count, picks the framework.
+The two systems are different shapes of problem, and the durable thing to take from either decision is the framing: use-case shape, not capability count, picks the framework.
 
 The first system, on the other project, is request-scoped. A user asks the system to do a thing; under the hood, a constellation of small agents fan out, do their work in parallel, and the results get assembled into a response. Latency budget is single-digit seconds. Each agent has a narrow job (extract this field, classify that intent, summarise this passage). They don't talk to each other, they don't loop, they each produce one structured output and return. The orchestration is parallel-fan-out with deterministic joins.
 
@@ -20,25 +20,41 @@ LangGraph is built for stateful, multi-step, conditional execution. You declare 
 
 Pydantic AI is closer to "type-safe agent primitives". An `Agent[DepsT, OutputT]` is a typed function that takes dependencies and produces a structured output, with tool calling built in, streaming built in, dependency injection built in. There's no graph. If you want orchestration, you compose agents with `asyncio.gather` or a `TaskGroup`. The framework gets out of the way; the language does the rest.
 
-Both frameworks can be made to do either shape. I want to be clear about that, because every framework comparison post on the internet has a "but you could just use X to do Y" objection. Yes, you could. The question I find more useful is what each framework was built for, what shape of problem it makes simple, and what shape it makes possible but awkward. Capability-counting (which framework supports more features?) is a different question and, in my view, the less helpful one for picking between two well-designed tools.
+Both frameworks can be made to do either shape. The question I find more useful is what each was built for and where the awkwardness lands, not which one supports more features.
 
 For that orchestration problem, Pydantic AI plus a custom asyncio graph wins.
 
-A single user request fires off, say, five parallel agents, each with a narrow job: extracting structured fields, classifying intent, applying topic tags, checking content quality, generating a short summary. They don't depend on each other, their outputs go into a deterministic merge step. Latency is dominated by the slowest agent (a couple of seconds), not by orchestration overhead. The asyncio version is short and obvious:
+A single user request fires off, say, five parallel agents, each with a narrow job: extracting structured fields, classifying intent, applying topic tags, checking content quality, generating a short summary. They don't depend on each other, their outputs go into a deterministic merge step. Latency is dominated by the slowest agent (a couple of seconds), not by orchestration overhead.
+
+Each agent is a typed primitive:
+
+```python
+class FieldOutput(BaseModel):
+    name: str
+    value: str
+
+extract_fields = Agent[Deps, FieldOutput](
+    model="claude-haiku-4-5-20251001",
+    output_type=FieldOutput,
+    system_prompt="Extract structured fields from the passage.",
+)
+```
+
+The composition is plain asyncio:
 
 ```python
 async with asyncio.TaskGroup() as tg:
-    field_task = tg.create_task(extract_fields.run(...))
-    intent_task = tg.create_task(classify_intent.run(...))
+    field_task = tg.create_task(extract_fields.run(passage, deps=deps))
+    intent_task = tg.create_task(classify_intent.run(passage, deps=deps))
     # ...
 final = merge(field_task.result(), intent_task.result(), ...)
 ```
 
-Ten lines. The LangGraph version would be a graph with a START node, five parallel branches to a JOIN node, then a final node. Same logical structure, more ceremony, plus a graph DSL to learn and debug. LangGraph's durable execution (the thing that justifies the abstraction cost) buys nothing on this workload because the request is gone in three seconds. There's nothing to durably persist.
+The LangGraph version would be a graph with a START node, five parallel branches to a JOIN node, then a final node. Same logical structure, more ceremony, plus a graph DSL to learn and debug. LangGraph's durable execution (the thing that justifies the abstraction cost) buys nothing on this workload because the request is gone in three seconds. There's nothing to durably persist.
 
-A second reason worth noting: every agent in the system already had structured Pydantic outputs flowing through the rest of the codebase. Pydantic AI's `OutputT` slots into the same type hierarchy. Type-safety end-to-end, no model duplication between layers, no marshalling step in the middle. It's the same kind of small fit advantage as choosing your ORM to match your serialiser; not load-bearing on its own, but real when the alternative would force a parallel type hierarchy.
+A second reason: every agent in the system already had structured Pydantic outputs flowing through the rest of the codebase. Pydantic AI's `OutputT` slots into the same type hierarchy. Type-safety end-to-end, no model duplication between layers, no marshalling step in the middle. It's the same kind of small fit advantage as choosing your ORM to match your serialiser; not load-bearing on its own, but real when the alternative would force a parallel type hierarchy.
 
-Worth landing this flat before moving on: LangGraph is built for a different shape of problem than asyncio, not a worse one. Choosing asyncio for this orchestration is a comment on the shape, not a criticism of the framework.
+LangGraph is built for a different shape of problem than asyncio, not a worse one. Choosing asyncio for this orchestration is a comment on the shape, not a criticism of the framework.
 
 For the Scout Agent, LangGraph wins.
 
