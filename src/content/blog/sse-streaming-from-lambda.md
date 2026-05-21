@@ -1,7 +1,7 @@
 ---
 title: An evening with OAC, POST, and SigV4
 description: I tried to put a CloudFront-fronted Lambda Function URL with OAC and AWS_IAM in front of an SSE-streaming agent. 100% of POSTs returned 403. Here's the evening.
-pubDate: 2026-05-17
+pubDate: 2026-05-15
 draft: false
 tags: [aws, lambda, cloudfront, sse, streaming]
 ---

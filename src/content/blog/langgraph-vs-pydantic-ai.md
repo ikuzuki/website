@@ -1,12 +1,12 @@
 ---
 title: LangGraph and Pydantic AI, six weeks apart
 description: I picked opposite frameworks for two agent systems six weeks apart. Same engineer, opposite call. The framing that made both right.
-pubDate: 2026-05-20
+pubDate: 2026-04-29
 draft: false
 tags: [llm, agents, langgraph, pydantic-ai, architecture]
 ---
 
-In March I wrote an ADR rejecting LangGraph for an agent orchestration layer on another project I worked on. We went with Pydantic AI on top of a custom asyncio graph instead. In May I wrote a second ADR, on a personal project, choosing LangGraph. Same engineer, opposite call, six weeks apart.
+In March I wrote an ADR rejecting LangGraph for an agent orchestration layer on another project I worked on. We went with Pydantic AI on top of a custom asyncio graph instead. Six weeks later, on a personal project, I picked LangGraph for the agent layer. Same engineer, opposite call.
 
 I don't think it's a contradiction, or a change of mind, or framework fashion. The two systems are different shapes of problem, and the durable thing to take from either decision is the framing: use-case shape, not capability count, picks the framework.
 

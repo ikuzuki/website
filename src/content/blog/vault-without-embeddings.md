@@ -1,7 +1,7 @@
 ---
 title: I deleted my embedding pipeline
 description: I built a hybrid FTS5 plus LanceDB MCP server with an Ollama embedding pipeline for my personal knowledge vault. After two months I deleted all of it. This is the long version.
-pubDate: 2026-05-13
+pubDate: 2026-05-20
 draft: false
 tags: [llm, rag, personal-knowledge, claude-code]
 ---
