@@ -10,23 +10,26 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
 <Base>
   <h1>Issei Kuzuki</h1>
   <p class="muted">
-    Data and platform engineer. Currently at Curve Analytics, building the
-    agentic analytics layer. Cambridge engineering before that.
+    Senior data engineer at Curve Analytics. Cambridge engineering before
+    that.
   </p>
 
   <p>
-    I work on the unglamorous parts of LLM-backed products: the data plane,
-    the infrastructure, the cost engineering, the decisions that let a model
-    call survive contact with production. Most of what I write here is
-    fieldwork from those edges.
+    I build data platforms for LLM-powered products, and the tooling that
+    lets other engineers ship them faster. The unglamorous parts: the data
+    plane, the infrastructure, the cost engineering, the decisions that let
+    a model call survive contact with production.
   </p>
+
+  <p>Most of what I write here is fieldwork from those edges.</p>
 
   <p>
     The bigger personal project is
     <a href="https://fpl.isseikuzuki.co.uk/">FPL Pulse</a>, a weekly LLM
-    enrichment pipeline plus an interactive transfer recommendation agent,
-    both running end-to-end on AWS. The dashboard is live; the architecture
-    and the decisions are in <a href="/projects/fpl-pulse/">the writeup</a>.
+    enrichment pipeline plus an interactive transfer recommendation agent.
+    Both open-source, both running end-to-end on AWS. The dashboard is live;
+    the architecture and the decisions are in
+    <a href="/projects/fpl-pulse/">the writeup</a>.
   </p>
 
   {
