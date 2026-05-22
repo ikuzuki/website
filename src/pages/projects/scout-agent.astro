@@ -59,6 +59,12 @@ import Base from "../../layouts/Base.astro";
     Safety-wise: the agent's tools are fixed paths to Neon and S3, no user-controlled URLs, no shell, no eval. Parameters are validated through Pydantic before being assembled into the SQL or HTTP call. DynamoDB holds a per-request £1 budget cap and per-IP rate limiter, defence in depth against the three-iteration cap failing to bind. At a typical 10p per turn the cap is theatre; the cost discipline is in the planner deciding when the loop has converged, not in the runtime stopping it.
   </p>
 
+  <h2>How I measure it</h2>
+
+  <p>
+    A 29-case golden eval set lives next to the agent at <code>services/agent/src/fpl_agent/evaluation/</code>. Each case declares the tools the planner must call, the tools it must not, the players the response has to mention (word-boundary regex), and the output-shape constraints (a comparison question must populate <code>ScoutReport.comparison</code>; an unknown-player question must leave <code>ScoutReport.players</code> empty). Hard checks pass-fail; on top of them a Haiku judge scores per-case rubric bullets 1 to 5 for narrative quality. The runner uses a pandas-mirrored fixture tool registry over a committed parquet snapshot of the Neon player table, so scores are reproducible run-over-run irrespective of Premier League results. Regenerating the snapshot is gated by a pre-write assertion that refuses to commit one that would silently break the eval set. A full run is around £1.20 on Anthropic end-to-end, of which the judge layer is roughly 10p; baseline numbers live in <code>docs/evals/baseline-v1.1.json</code>.
+  </p>
+
   <h2>What I'd do differently</h2>
 
   <p>
