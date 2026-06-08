@@ -25,3 +25,15 @@ variable "aliases" {
   type        = list(string)
   default     = []
 }
+
+variable "log_bucket_domain" {
+  description = "Bucket domain for CloudFront standard access logs (e.g. ikuzuki-analytics-logs.s3.eu-west-2.amazonaws.com). Null disables logging."
+  type        = string
+  default     = null
+}
+
+variable "log_prefix" {
+  description = "Key prefix for delivered access logs within the log bucket (e.g. cloudfront/website/)."
+  type        = string
+  default     = ""
+}

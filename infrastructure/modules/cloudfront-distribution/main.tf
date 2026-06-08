@@ -43,6 +43,16 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
+  # Standard access logging to the shared analytics bucket (per-site prefix).
+  dynamic "logging_config" {
+    for_each = var.log_bucket_domain == null ? [] : [1]
+    content {
+      bucket          = var.log_bucket_domain
+      prefix          = var.log_prefix
+      include_cookies = false
+    }
+  }
+
   # Astro static build: a missing path is genuinely a 404. Return the
   # generated 404.html with a 404 status — do not collapse to index.html.
   custom_error_response {
