@@ -44,6 +44,12 @@ module "cdn" {
   site_bucket_regional_domain_name = module.site_bucket.bucket_regional_domain_name
   acm_certificate_arn              = aws_acm_certificate_validation.site.certificate_arn
   aliases                          = [var.domain_name, "www.${var.domain_name}"]
+
+  # Analytics: deliver access logs to the shared bucket (ikuzuki/analytics)
+  # under the website prefix. No client beacon here; the multi-page site's
+  # access logs already carry pageview, referrer and path data.
+  log_bucket_domain = "ikuzuki-analytics-logs.s3.eu-west-2.amazonaws.com"
+  log_prefix        = "cloudfront/website/"
 }
 
 # Bucket policy lives here so it can reference the distribution ARN without
