@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="960" height="460" font-family="'Inter', system-ui, -apple-system, sans-serif">
+  <rect x="0" y="0" width="960" height="460" fill="none"/>
+
+  <text x="480" y="36" text-anchor="middle" font-size="22" font-weight="600" fill="#232F3E">Row-store versus columnar, same analytical scan</text>
+  <text x="480" y="62" text-anchor="middle" font-size="14" fill="#6B6358" font-family="'JetBrains Mono', ui-monospace, monospace">SELECT team, SUM(goals) FROM players GROUP BY team</text>
+
+  <!-- LEFT PANEL: PostgreSQL row-store -->
+  <rect x="40" y="96" width="400" height="256" rx="8" fill="#FFFFFF" stroke="#E8E2D6" stroke-width="1.5"/>
+  <text x="240" y="124" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">PostgreSQL, row-major</text>
+  <text x="240" y="144" text-anchor="middle" font-size="12" fill="#6B6358">each row's fields stored together</text>
+
+  <!-- header row -->
+  <rect x="60" y="168" width="68" height="30" rx="3" fill="#F7DFB0" stroke="#D9A441"/><text x="94" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#232F3E">team</text>
+  <rect x="132" y="168" width="68" height="30" rx="3" fill="#F7DFB0" stroke="#D9A441"/><text x="166" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#232F3E">player</text>
+  <rect x="204" y="168" width="68" height="30" rx="3" fill="#F7DFB0" stroke="#D9A441"/><text x="238" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#232F3E">goals</text>
+  <rect x="276" y="168" width="68" height="30" rx="3" fill="#F7DFB0" stroke="#D9A441"/><text x="310" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#232F3E">xG</text>
+  <rect x="348" y="168" width="68" height="30" rx="3" fill="#F7DFB0" stroke="#D9A441"/><text x="382" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#232F3E">min</text>
+
+  <!-- data rows (all read) -->
+  <rect x="60" y="202" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="132" y="202" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="204" y="202" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="276" y="202" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="348" y="202" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/>
+  <rect x="60" y="232" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="132" y="232" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="204" y="232" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="276" y="232" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="348" y="232" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/>
+  <rect x="60" y="262" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="132" y="262" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="204" y="262" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="276" y="262" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/><rect x="348" y="262" width="68" height="26" rx="3" fill="#FBECCF" stroke="#E4BE73"/>
+
+  <text x="240" y="326" text-anchor="middle" font-size="12" fill="#6B6358">Needs 2 columns. Reads all 5, row by row.</text>
+
+  <!-- RIGHT PANEL: ClickHouse columnar -->
+  <rect x="520" y="96" width="400" height="256" rx="8" fill="#FFFFFF" stroke="#E8E2D6" stroke-width="1.5"/>
+  <text x="720" y="124" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">ClickHouse, columnar</text>
+  <text x="720" y="144" text-anchor="middle" font-size="12" fill="#6B6358">each column stored together</text>
+
+  <!-- header row -->
+  <rect x="540" y="168" width="68" height="30" rx="3" fill="#CFE8C8" stroke="#5AA05A"/><text x="574" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#1B5E20">team</text>
+  <rect x="612" y="168" width="68" height="30" rx="3" fill="#EEEAE1" stroke="#D8D0C2"/><text x="646" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#A79E90">player</text>
+  <rect x="684" y="168" width="68" height="30" rx="3" fill="#CFE8C8" stroke="#5AA05A"/><text x="718" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#1B5E20">goals</text>
+  <rect x="756" y="168" width="68" height="30" rx="3" fill="#EEEAE1" stroke="#D8D0C2"/><text x="790" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#A79E90">xG</text>
+  <rect x="828" y="168" width="68" height="30" rx="3" fill="#EEEAE1" stroke="#D8D0C2"/><text x="862" y="188" text-anchor="middle" font-size="12" font-weight="600" fill="#A79E90">min</text>
+
+  <!-- data rows (only team + goals read) -->
+  <rect x="540" y="202" width="68" height="26" rx="3" fill="#DBEED5" stroke="#7DBB7D"/><rect x="612" y="202" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/><rect x="684" y="202" width="68" height="26" rx="3" fill="#DBEED5" stroke="#7DBB7D"/><rect x="756" y="202" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/><rect x="828" y="202" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/>
+  <rect x="540" y="232" width="68" height="26" rx="3" fill="#DBEED5" stroke="#7DBB7D"/><rect x="612" y="232" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/><rect x="684" y="232" width="68" height="26" rx="3" fill="#DBEED5" stroke="#7DBB7D"/><rect x="756" y="232" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/><rect x="828" y="232" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/>
+  <rect x="540" y="262" width="68" height="26" rx="3" fill="#DBEED5" stroke="#7DBB7D"/><rect x="612" y="262" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/><rect x="684" y="262" width="68" height="26" rx="3" fill="#DBEED5" stroke="#7DBB7D"/><rect x="756" y="262" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/><rect x="828" y="262" width="68" height="26" rx="3" fill="#F3F0E9" stroke="#E0D9CC"/>
+
+  <text x="720" y="326" text-anchor="middle" font-size="12" fill="#6B6358">Reads only team and goals. Skips the rest.</text>
+
+  <!-- number strip -->
+  <text x="480" y="392" text-anchor="middle" font-size="17" font-weight="600" fill="#232F3E">Typically 10 to 100x faster on analytical scans</text>
+  <text x="480" y="414" text-anchor="middle" font-size="11" fill="#6B6358" font-family="'JetBrains Mono', ui-monospace, monospace">public ClickBench suite, benchmark.clickhouse.com</text>
+
+  <text x="480" y="444" text-anchor="middle" font-size="12" font-style="italic" fill="#6B6358">Same query, same data. The storage layout is the difference.</text>
+</svg>
