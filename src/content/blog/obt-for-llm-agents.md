@@ -2,7 +2,7 @@
 title: The agent wants one big table
 description: LLM agents reason badly about joins. The industry denormalised for the engine for a decade; now it's denormalising for the model. Why one big table is winning again, and where ClickHouse fits.
 pubDate: 2026-07-09
-draft: true
+draft: false
 tags: [data-modelling, llm, agents, clickhouse, olap]
 ---
 
