@@ -1,8 +1,8 @@
 ---
 title: The bottleneck moved to verification
 description: Writing code is a fifth of the job, and it's the fifth AI just optimised. The constraint moves to the other end, telling whether what you got is right, and that end scales worst exactly as you produce more.
-pubDate: 2026-07-16
-draft: true
+pubDate: 2026-09-16
+draft: false
 tags: [ai-engineering, verification, testing, llm]
 ---
 

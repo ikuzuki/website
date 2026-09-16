@@ -1,8 +1,8 @@
 ---
-title: I shipped a game in a language I don't write
+title: Directing a game I couldn't have written
 description: I don't write frontend. Tube Race is a live, polished React game. What I actually did was decide what "correct" meant and check whether it held, which turns out to be most of the job.
-pubDate: 2026-07-09
-draft: true
+pubDate: 2026-08-19
+draft: false
 tags: [ai-engineering, claude-code, side-project, product]
 ---
 
