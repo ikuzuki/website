@@ -6,13 +6,13 @@ draft: false
 tags: [llm, agents, langgraph, pydantic-ai, architecture]
 ---
 
-In March I wrote an ADR rejecting LangGraph for an agent orchestration layer on another project I worked on. We went with Pydantic AI on top of a custom asyncio graph instead. Six weeks later, on a personal project, I picked LangGraph for the agent layer. Same engineer, opposite call.
+In March, on another project I worked on, we rejected LangGraph for an agent orchestration layer and went with Pydantic AI on top of a custom asyncio graph instead. Six weeks later, on a personal project, I picked LangGraph for the agent layer. Same engineer, opposite call.
 
 The two systems are different shapes of problem, and the durable thing to take from either decision is the framing: use-case shape, not capability count, picks the framework.
 
 The first system, on the other project, is request-scoped. A user asks the system to do a thing; under the hood, a constellation of small agents fan out, do their work in parallel, and the results get assembled into a response. Latency budget is single-digit seconds. Each agent has a narrow job (extract this field, classify that intent, summarise this passage). They don't talk to each other, they don't loop, they each produce one structured output and return. The orchestration is parallel-fan-out with deterministic joins.
 
-The second system, the [Scout Agent](/projects/scout-agent/) on top of my FPL pipeline, is conversational. A user asks for transfer recommendations on their team. The agent forms a plan, executes some tools (pgvector search, fixture lookup, player history), looks at the results, decides whether the plan still makes sense, possibly amends it, and eventually produces a recommendation. Latency budget is tens of seconds. The user is sitting there watching a streaming response come back. The orchestration is a conditional loop over shared state.
+The second system, the [Scout Agent](/projects/scout-agent/) on top of my FPL pipeline (Fantasy Premier League, the official fantasy football game: pick a squad of real players, score points from their real performances), is conversational. A user asks for transfer recommendations on their team. The agent forms a plan, executes some tools (pgvector search, fixture lookup, player history), looks at the results, decides whether the plan still makes sense, possibly amends it, and eventually produces a recommendation. Latency budget is tens of seconds. The user is sitting there watching a streaming response come back. The orchestration is a conditional loop over shared state.
 
 Stateful-loop on one side, parallel-fan-out on the other.
 
@@ -71,6 +71,6 @@ The diagnostic I find myself reaching for when other people ask me about this is
 
 I want to head off the "but if your shape changes, you'll regret the choice" objection. Real answer: yes, you will, and that's fine. Frameworks aren't forever. When that system starts needing durable execution for long-running workflows (it will, probably within a year), the relevant agents will get ported to LangGraph or Temporal and the migration cost paid. The system was right for the shape it had at the time of building. The same is true on the FPL side. If the Scout Agent ever needs to handle parallel users, fanning their requests out across nodes that don't share state, the LangGraph shape will start to feel heavy and I'll port the affected nodes back to plain asyncio. Both decisions are revisable; both will be revised; that's not the same as either being wrong.
 
-The thing that surprised me most, looking back at the two ADRs side by side, is how clean the symmetry is once the framing is right. The two systems share roughly zero implementation, but they share a decision rule. That feels right to me. Most of the framework-choice posts I read are anti-X or pro-Y. The interesting position to defend is harder: same engineer, two opposite choices, both right.
+The thing that surprised me most, looking back at the two decisions side by side, is how clean the symmetry is once the framing is right. The two systems share roughly zero implementation, but they share a decision rule. That feels right to me. Most of the framework-choice posts I read are anti-X or pro-Y. The interesting position to defend is harder: same engineer, two opposite choices, both right.
 
 The deployed version of the Scout Agent runs at [fpl.isseikuzuki.co.uk/chat](https://fpl.isseikuzuki.co.uk/chat) if you want to prod the four-node graph this post describes. Paste a team ID, ask for a transfer recommendation, watch the loop run.

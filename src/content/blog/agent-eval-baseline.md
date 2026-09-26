@@ -6,7 +6,7 @@ draft: false
 tags: [llm, agents, evals, llm-as-judge, fpl]
 ---
 
-Until last week I'd never built evals for anything. I'd read the posts. I'd nodded at the rubrics. I'd thought "sensible" and never quite got round to it. The agent in my FPL project had been changing roughly weekly for a couple of months; my way of knowing whether the changes were improvements was to ask it a few questions by hand and read the responses. This worked when the change set was small. It stopped working when I was changing the planner prompt, the tool registry, and the recommender simultaneously and couldn't tell whether the resulting answers were better than the answers before.
+Until last week I'd never built evals for anything. I'd read the posts. I'd nodded at the rubrics. I'd thought "sensible" and never quite got round to it. The agent in my FPL project (Fantasy Premier League, the official fantasy football game: pick a squad of real players, score points from their real performances) had been changing roughly weekly for a couple of months; my way of knowing whether the changes were improvements was to ask it a few questions by hand and read the responses. This worked when the change set was small. It stopped working when I was changing the planner prompt, the tool registry, and the recommender simultaneously and couldn't tell whether the resulting answers were better than the answers before.
 
 I built the eval framework partly out of necessity and partly because I'd run out of excuses. I expected it to confirm a few things I already suspected: that some cases were borderline, that the agent hedged occasionally when it shouldn't, that the recommender's prose got woolly under squad-context load. Most of what I expected was true. The interesting things were three I didn't expect at all.
 
@@ -19,6 +19,11 @@ The agent had done something I hadn't anticipated. It acknowledged the absence e
 A dashboard that rendered the `players[]` array would put "Xherdan Shaqiri, MID, £0.0m" on the page with a confidence bar. The prose disclaiming this would sit alongside, in a different column. The reader's eye would land on the row first.
 
 I think the reason I'd half-assumed the layers would agree on cases like this is that the failure is obvious to a person reading carefully. It isn't obvious to an LLM reading the prose first and weighing prose heavily, because the prose carries most of the apparent signal. The hard check is doing the thing the judge would feel impolite doing.
+
+<figure>
+  <img src="/diagrams/two-graders-two-surfaces.svg" alt="One agent response split into two boxes. The prose box says Shaqiri isn't in this season's dataset and advises against picking him, labelled honest about the absence. The schema box shows a players array holding Xherdan Shaqiri with price 0.0, form 0.0 and confidence 0.1, labelled fabricated anyway. An arrow from the prose goes to the LLM judge, which scores 4.25 out of 5. An arrow from the schema goes to the deterministic hard check, must_have_empty_players_list, which returns FAIL. A strip at the bottom reads: a dashboard renders the players array, not the prose." />
+  <figcaption>Same response. The judge read the prose and forgave it; the check read the schema and didn't.</figcaption>
+</figure>
 
 The second surprise came when I sat down to hand-rate three cases against the judge's scores to calibrate. I'd picked one case I expected the judge to nail, one I expected disagreement on, and one I wasn't sure about. The point was to check that the judge wasn't systematically lenient or harsh. Mean absolute delta across eleven rubric bullets came out to exactly 1.0, which is right on the line I'd set for "publish-able vs needs-tightening". Most bullets agreed within a point. One bullet disagreed by four.
 

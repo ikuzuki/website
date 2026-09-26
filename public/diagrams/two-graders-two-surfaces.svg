@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" width="960" height="470" font-family="'Inter', system-ui, -apple-system, sans-serif">
+  <rect x="0" y="0" width="960" height="470" fill="none"/>
+
+  <text x="480" y="36" text-anchor="middle" font-size="22" font-weight="600" fill="#232F3E">One response, two graders, two surfaces</text>
+  <text x="480" y="60" text-anchor="middle" font-size="14" fill="#6B6358">the case: "Tell me about Xherdan Shaqiri", a player not in this season's data</text>
+
+  <!-- RESPONSE -->
+  <rect x="40" y="92" width="440" height="300" rx="8" fill="#FFFFFF" stroke="#E8E2D6" stroke-width="1.5"/>
+  <text x="260" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">the agent's response</text>
+
+  <rect x="64" y="140" width="392" height="104" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.5"/>
+  <text x="80" y="162" font-size="12" font-weight="600" fill="#232F3E">prose: analysis text</text>
+  <text x="80" y="184" font-size="12" fill="#232F3E">"Shaqiri isn't in this season's dataset. I'd advise against</text>
+  <text x="80" y="202" font-size="12" fill="#232F3E">picking him. Every value below is an assumption and should</text>
+  <text x="80" y="220" font-size="12" fill="#232F3E">be treated as such."</text>
+  <text x="440" y="237" text-anchor="end" font-size="11" fill="#6B6358">honest about the absence</text>
+
+  <rect x="64" y="262" width="392" height="112" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.5"/>
+  <text x="80" y="284" font-size="12" font-weight="600" fill="#232F3E">schema: players[]</text>
+  <text x="80" y="306" font-size="12" fill="#232F3E" font-family="'JetBrains Mono', ui-monospace, monospace">{ name: "Xherdan Shaqiri", position: "MID",</text>
+  <text x="80" y="324" font-size="12" fill="#232F3E" font-family="'JetBrains Mono', ui-monospace, monospace">  price: 0.0, form: 0.0, confidence: 0.1 }</text>
+  <text x="440" y="366" text-anchor="end" font-size="11" fill="#C0504D">fabricated anyway: a placeholder row</text>
+
+  <!-- ARROWS -->
+  <line x1="456" y1="192" x2="556" y2="164" stroke="#232F3E" stroke-width="1.5"/>
+  <polygon points="560,163 551,162 553,170" fill="#232F3E"/>
+  <text x="506" y="168" text-anchor="middle" font-size="11" fill="#6B6358">reads</text>
+
+  <line x1="456" y1="318" x2="556" y2="318" stroke="#232F3E" stroke-width="1.5"/>
+  <polygon points="560,318 552,314 552,322" fill="#232F3E"/>
+  <text x="506" y="310" text-anchor="middle" font-size="11" fill="#6B6358">reads</text>
+
+  <!-- GRADERS -->
+  <rect x="564" y="118" width="356" height="112" rx="8" fill="#F7DFB0" stroke="#D9A441" stroke-width="1.5"/>
+  <text x="742" y="146" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">LLM judge (Haiku)</text>
+  <text x="742" y="168" text-anchor="middle" font-size="12" fill="#232F3E">scores the response against a per-case rubric</text>
+  <rect x="672" y="184" width="140" height="32" rx="16" fill="#DCEFDC" stroke="#5B9A5B" stroke-width="1.5"/>
+  <text x="742" y="205" text-anchor="middle" font-size="13" font-weight="600" fill="#232F3E">4.25 / 5</text>
+
+  <rect x="564" y="262" width="356" height="130" rx="8" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.5"/>
+  <text x="742" y="290" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">deterministic hard check</text>
+  <text x="742" y="312" text-anchor="middle" font-size="12" fill="#232F3E" font-family="'JetBrains Mono', ui-monospace, monospace">must_have_empty_players_list = True</text>
+  <rect x="686" y="330" width="112" height="32" rx="16" fill="#FBE9E7" stroke="#C0504D" stroke-width="1.5"/>
+  <text x="742" y="351" text-anchor="middle" font-size="13" font-weight="600" fill="#C0504D">FAIL</text>
+  <text x="742" y="382" text-anchor="middle" font-size="11" fill="#6B6358">asks the question the judge finds rude</text>
+
+  <!-- bottom strip -->
+  <rect x="40" y="412" width="880" height="42" rx="8" fill="#F5F1EA" stroke="#E8E2D6" stroke-width="1"/>
+  <text x="480" y="438" text-anchor="middle" font-size="13" fill="#232F3E">A dashboard renders players[], not the prose. The reader's eye lands on the row first.</text>
+</svg>

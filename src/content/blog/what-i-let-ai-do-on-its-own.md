@@ -1,6 +1,6 @@
 ---
 title: What I let AI do on its own
-description: Three positions, placed per activity and not per tool, and the one rule that does the real work: you can only hand an activity to the model if you can point at the human-owned layer upstream that makes it safe.
+description: "Three positions, placed per activity and not per tool, and the one rule that does the real work: you can only hand an activity to the model if you can point at the human-owned layer upstream that makes it safe."
 pubDate: 2026-09-16
 draft: true
 tags: [ai-engineering, ai-native, workflow, guardrails]

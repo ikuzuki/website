@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="'Inter', system-ui, -apple-system, sans-serif">
+  <rect x="0" y="0" width="960" height="520" fill="none"/>
+
+  <text x="480" y="36" text-anchor="middle" font-size="22" font-weight="600" fill="#232F3E">Where the team's standards live</text>
+  <text x="480" y="60" text-anchor="middle" font-size="14" fill="#6B6358">what is in front of the model when code gets written</text>
+
+  <!-- LEFT PANEL: before -->
+  <rect x="40" y="90" width="400" height="330" rx="8" fill="#FFFFFF" stroke="#E8E2D6" stroke-width="1.5"/>
+  <text x="240" y="118" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">Before: context is a per-session decision</text>
+
+  <rect x="70" y="146" width="120" height="44" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.5"/>
+  <text x="130" y="173" text-anchor="middle" font-size="13" fill="#232F3E">engineer</text>
+
+  <line x1="190" y1="168" x2="286" y2="168" stroke="#232F3E" stroke-width="1.5"/>
+  <polygon points="286,168 278,164 278,172" fill="#232F3E"/>
+  <text x="238" y="158" text-anchor="middle" font-size="11" fill="#6B6358">@-mentions files</text>
+
+  <rect x="290" y="146" width="120" height="44" rx="6" fill="#F7DFB0" stroke="#D9A441" stroke-width="1.5"/>
+  <text x="350" y="173" text-anchor="middle" font-size="13" font-weight="600" fill="#232F3E">model</text>
+
+  <rect x="70" y="218" width="160" height="54" rx="6" fill="#FFFFFF" stroke="#9A9385" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="150" y="240" text-anchor="middle" font-size="12" fill="#232F3E">standards doc</text>
+  <text x="150" y="257" text-anchor="middle" font-size="11" fill="#6B6358">exists, not in context</text>
+
+  <rect x="70" y="302" width="96" height="40" rx="5" fill="#FFFFFF" stroke="#9A9385" stroke-width="1.2"/>
+  <text x="118" y="326" text-anchor="middle" font-size="11" fill="#232F3E" font-family="'JetBrains Mono', ui-monospace, monospace">.cursorrules</text>
+  <rect x="180" y="302" width="96" height="40" rx="5" fill="#FFFFFF" stroke="#9A9385" stroke-width="1.2"/>
+  <text x="228" y="326" text-anchor="middle" font-size="11" fill="#232F3E" font-family="'JetBrains Mono', ui-monospace, monospace">.cursorrules</text>
+  <rect x="290" y="302" width="96" height="40" rx="5" fill="#FFFFFF" stroke="#9A9385" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="338" y="326" text-anchor="middle" font-size="11" fill="#6B6358" font-family="'JetBrains Mono', ui-monospace, monospace">(none)</text>
+  <text x="228" y="366" text-anchor="middle" font-size="12" fill="#6B6358">one copy per repo, each drifting; new repos start with nothing</text>
+
+  <text x="240" y="394" text-anchor="middle" font-size="12" fill="#232F3E">consistent with what the model saw,</text>
+  <text x="240" y="410" text-anchor="middle" font-size="12" fill="#232F3E">inconsistent with the convention it didn't</text>
+
+  <!-- RIGHT PANEL: after -->
+  <rect x="520" y="90" width="400" height="330" rx="8" fill="#FFFFFF" stroke="#E8E2D6" stroke-width="1.5"/>
+  <text x="720" y="118" text-anchor="middle" font-size="15" font-weight="600" fill="#232F3E">After: layered, distributed, enforced</text>
+
+  <rect x="550" y="140" width="340" height="52" rx="6" fill="#F7DFB0" stroke="#D9A441" stroke-width="1.5"/>
+  <text x="720" y="160" text-anchor="middle" font-size="13" font-weight="600" fill="#232F3E">team plugin</text>
+  <text x="720" y="178" text-anchor="middle" font-size="11" fill="#232F3E">skills, review agents, hooks: true across every repo</text>
+
+  <rect x="550" y="200" width="340" height="44" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.5"/>
+  <text x="720" y="218" text-anchor="middle" font-size="13" font-weight="600" fill="#232F3E" font-family="'JetBrains Mono', ui-monospace, monospace">CLAUDE.md</text>
+  <text x="720" y="234" text-anchor="middle" font-size="11" fill="#232F3E">per repo: only what the plugin cannot know</text>
+
+  <line x1="720" y1="244" x2="720" y2="272" stroke="#232F3E" stroke-width="1.5"/>
+  <polygon points="720,276 716,268 724,268" fill="#232F3E"/>
+
+  <rect x="550" y="278" width="340" height="44" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.5"/>
+  <text x="720" y="296" text-anchor="middle" font-size="13" font-weight="600" fill="#232F3E">model context, every session</text>
+  <text x="720" y="312" text-anchor="middle" font-size="11" fill="#6B6358">whoever is at the keyboard, whatever they remember to attach</text>
+
+  <!-- review routine with human gate -->
+  <rect x="550" y="346" width="118" height="40" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.2"/>
+  <text x="609" y="364" text-anchor="middle" font-size="11" font-weight="600" fill="#232F3E">review routine</text>
+  <text x="609" y="378" text-anchor="middle" font-size="10" fill="#6B6358">cites the standard</text>
+
+  <line x1="668" y1="366" x2="704" y2="366" stroke="#232F3E" stroke-width="1.2"/>
+  <polygon points="708,366 700,362 700,370" fill="#232F3E"/>
+
+  <rect x="710" y="346" width="70" height="40" rx="6" fill="#FBE9E7" stroke="#C0504D" stroke-width="2"/>
+  <text x="745" y="370" text-anchor="middle" font-size="11" font-weight="600" fill="#232F3E">human</text>
+
+  <line x1="780" y1="366" x2="816" y2="366" stroke="#232F3E" stroke-width="1.2"/>
+  <polygon points="820,366 812,362 812,370" fill="#232F3E"/>
+
+  <rect x="822" y="346" width="68" height="40" rx="6" fill="#FFFFFF" stroke="#232F3E" stroke-width="1.2"/>
+  <text x="856" y="364" text-anchor="middle" font-size="11" font-weight="600" fill="#232F3E">approve</text>
+  <text x="856" y="378" text-anchor="middle" font-size="10" fill="#6B6358">and merge</text>
+
+  <text x="720" y="406" text-anchor="middle" font-size="11" fill="#6B6358">automate the invocation, not the decision</text>
+
+  <!-- bottom strip -->
+  <rect x="40" y="444" width="880" height="44" rx="8" fill="#F5F1EA" stroke="#E8E2D6" stroke-width="1"/>
+  <text x="480" y="471" text-anchor="middle" font-size="13" fill="#232F3E">Hooks and skills enforce a standard. A prompt asks someone to remember it, and half the time they won't.</text>
+</svg>

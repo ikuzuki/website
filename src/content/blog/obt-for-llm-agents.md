@@ -6,7 +6,7 @@ draft: false
 tags: [data-modelling, llm, agents, clickhouse, olap]
 ---
 
-The Scout Agent on my FPL project plans its own data access. You ask it whether to captain Haaland or Palmer this week, the planner turns that into a handful of tool calls, the tools fetch, and the agent reasons over whatever comes back before it commits to an answer. Building it, I made one decision early that I didn't think hard about and now think was the most load-bearing one on the whole data side: every tool returns a flat, pre-joined record. One player, one object, with form and fixtures and injury signal and sentiment already stitched together. The agent never joins anything itself.
+The Scout Agent on my FPL project (Fantasy Premier League, the official fantasy football game: pick a squad of real players, score points from their real performances) plans its own data access. You ask it whether to captain Haaland or Palmer this week, the planner turns that into a handful of tool calls, the tools fetch, and the agent reasons over whatever comes back before it commits to an answer. Building it, I made one decision early that I didn't think hard about and now think was the most load-bearing one on the whole data side: every tool returns a flat, pre-joined record. One player, one object, with form and fixtures and injury signal and sentiment already stitched together. The agent never joins anything itself.
 
 That wasn't foresight. It fell out of the pipeline shape, because the enrichment step already produces one curated record per player, so the agent-facing tools just hand that back. But watching the agent work, I've become convinced the flatness is doing more than saving a query. It's making the agent correct more often.
 
