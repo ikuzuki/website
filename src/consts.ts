@@ -4,6 +4,6 @@ export const SITE_TITLE = "Issei Kuzuki";
 export const SITE_DESCRIPTION =
   "Data and platform engineering. Notes on LLM infrastructure, agentic systems, and AI-native engineering practice.";
 export const AUTHOR = "Issei Kuzuki";
-export const LINKEDIN_URL = "https://www.linkedin.com/in/issei-kuzuki/";
+export const LINKEDIN_URL = "https://www.linkedin.com/in/issei-kuzuki-ab850722b/";
 export const GITHUB_URL = "https://github.com/ikuzuki";
 export const CONTACT_EMAIL = "ikuzuki0@gmail.com";
