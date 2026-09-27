@@ -1,6 +1,6 @@
 ---
 title: LangGraph and Pydantic AI, six weeks apart
-description: I picked opposite frameworks for two agent systems six weeks apart. Same engineer, opposite call. The framing that made both right.
+description: Two agent systems, six weeks apart, opposite frameworks. Same engineer, opposite call. The framing that made both right.
 pubDate: 2026-04-29
 draft: false
 tags: [llm, agents, langgraph, pydantic-ai, architecture]
